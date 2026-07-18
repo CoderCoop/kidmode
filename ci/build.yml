@@ -1,0 +1,140 @@
+name: Build packaged apps
+
+# Produces installable/runnable app packages as downloadable CI artifacts:
+#   - Android: a (debug-signed) release APK
+#   - iOS:     an unsigned Simulator .app (a code-signed .ipa needs signing
+#              secrets, which this public workflow does not carry)
+#
+# A fast `checks` gate (typecheck + lint + unit tests) runs first; the two
+# native builds run in parallel after it passes.
+#
+# NOTE: this file lives at ci/build.yml because the automation that created it
+# lacked GitHub "workflow" scope. Move it to .github/workflows/build.yml to
+# activate it (GitHub only runs workflows from that directory).
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Type-check, lint, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test -- --ci
+
+  android:
+    name: Android APK
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK + CMake (pinned to the RN template versions)
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" \
+                     "ndk;26.1.10909125" "cmake;3.22.1"
+
+      - run: npm ci
+
+      - name: Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Assemble release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: babymode-android-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+  ios:
+    name: iOS Simulator app
+    needs: checks
+    runs-on: macos-14
+    env:
+      # Speed up + de-flake pod install on CI.
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+
+      - run: npm ci
+
+      - name: Install CocoaPods deps
+        working-directory: ios
+        run: |
+          bundle install
+          bundle exec pod install
+
+      - name: Build (iphonesimulator, unsigned)
+        working-directory: ios
+        run: |
+          xcodebuild \
+            -workspace BabyMode.xcworkspace \
+            -scheme BabyMode \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package .app
+        working-directory: ios
+        run: |
+          APP=$(find build/Build/Products -name 'BabyMode.app' -maxdepth 3 | head -1)
+          echo "Found app at: $APP"
+          test -n "$APP"
+          ditto -c -k --sequesterRsrc --keepParent "$APP" BabyMode-simulator.app.zip
+
+      - name: Upload iOS app
+        uses: actions/upload-artifact@v4
+        with:
+          name: babymode-ios-simulator-app
+          path: ios/BabyMode-simulator.app.zip
+          if-no-files-found: error
