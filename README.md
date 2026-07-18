@@ -64,13 +64,20 @@ npm run android   # or: npm run ios  (macOS: bundle exec pod install first)
 
 ## Builds
 
-CI (`.github/workflows/build.yml`) type-checks, lints, and tests, then builds
-**packaged apps** as downloadable artifacts on every push/PR:
+CI type-checks, lints, and tests, then builds **packaged apps** as downloadable
+artifacts on every push/PR:
 
 | Artifact | Job | What it is |
 |---|---|---|
 | `babymode-android-apk` | ubuntu | debug-signed **release APK** (`adb install`) |
 | `babymode-ios-simulator-app` | macOS | unsigned **Simulator `.app`** (a signed `.ipa` needs Apple certs) |
+
+> **Activate CI:** the pipeline definition is committed at [`ci/build.yml`](ci/build.yml)
+> rather than `.github/workflows/` because the automation that authored it lacked
+> GitHub *workflow* scope. Move it once to activate:
+> `git mv ci/build.yml .github/workflows/build.yml && git commit && git push`
+> (from an environment whose credentials include workflow scope, or via the
+> GitHub web editor).
 
 Build locally: `cd android && ./gradlew assembleRelease`. See
 [`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md) for tooling, the module layout,
