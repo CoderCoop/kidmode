@@ -1,12 +1,18 @@
 name: Build packaged apps
 
-# Produces installable/runnable app packages as downloadable CI artifacts:
-#   - Android: a (debug-signed) release APK
-#   - iOS:     an unsigned Simulator .app (a code-signed .ipa needs signing
-#              secrets, which this public workflow does not carry)
+# Produces installable/runnable app packages as downloadable CI artifacts.
 #
-# A fast `checks` gate (typecheck + lint + unit tests) runs first; the two
-# native builds run in parallel after it passes.
+#   Android:
+#     - always: a release APK (debug-signed by default)
+#     - if ANDROID_KEYSTORE_BASE64 (+ friends) secrets are set: a properly
+#       release-signed APK
+#   iOS:
+#     - default: an unsigned Simulator .app
+#     - if IOS_CERTIFICATE_BASE64 (+ friends) secrets are set: a signed device
+#       .ipa produced via xcodebuild archive + -exportArchive
+#
+# See docs/RELEASE_SIGNING.md for the exact secret names/values. A fast `checks`
+# gate (typecheck + lint + unit tests) runs first; the native builds follow.
 #
 # NOTE: this file lives at ci/build.yml because the automation that created it
 # lacked GitHub "workflow" scope. Move it to .github/workflows/build.yml to
@@ -41,6 +47,9 @@ jobs:
     name: Android APK
     needs: checks
     runs-on: ubuntu-latest
+    # Surfaced as env so steps can gate on "is a keystore secret configured?".
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
     steps:
       - uses: actions/checkout@v4
 
@@ -66,6 +75,21 @@ jobs:
 
       - run: npm ci
 
+      - name: Configure release signing (only if secrets are set)
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
+          cat >> android/gradle.properties <<EOF
+          BABYMODE_UPLOAD_STORE_FILE=release.keystore
+          BABYMODE_UPLOAD_STORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD
+          BABYMODE_UPLOAD_KEY_ALIAS=$ANDROID_KEY_ALIAS
+          BABYMODE_UPLOAD_KEY_PASSWORD=$ANDROID_KEY_PASSWORD
+          EOF
+
       - name: Gradle cache
         uses: actions/cache@v4
         with:
@@ -87,12 +111,13 @@ jobs:
           if-no-files-found: error
 
   ios:
-    name: iOS Simulator app
+    name: iOS app
     needs: checks
     runs-on: macos-14
     env:
-      # Speed up + de-flake pod install on CI.
       HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      # Surfaced so steps can gate on "are signing secrets configured?".
+      IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
     steps:
       - uses: actions/checkout@v4
 
@@ -112,7 +137,9 @@ jobs:
           bundle install
           bundle exec pod install
 
-      - name: Build (iphonesimulator, unsigned)
+      # ---- Unsigned path (default: no signing secrets) --------------------
+      - name: Build unsigned Simulator app
+        if: env.IOS_CERTIFICATE_BASE64 == ''
         working-directory: ios
         run: |
           xcodebuild \
@@ -124,17 +151,92 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Package .app
+      - name: Package Simulator .app
+        if: env.IOS_CERTIFICATE_BASE64 == ''
         working-directory: ios
         run: |
           APP=$(find build/Build/Products -name 'BabyMode.app' -maxdepth 3 | head -1)
-          echo "Found app at: $APP"
-          test -n "$APP"
+          echo "Found app at: $APP"; test -n "$APP"
           ditto -c -k --sequesterRsrc --keepParent "$APP" BabyMode-simulator.app.zip
 
-      - name: Upload iOS app
+      - name: Upload Simulator app
+        if: env.IOS_CERTIFICATE_BASE64 == ''
         uses: actions/upload-artifact@v4
         with:
           name: babymode-ios-simulator-app
           path: ios/BabyMode-simulator.app.zip
+          if-no-files-found: error
+
+      # ---- Signed path (signing secrets present) --------------------------
+      - name: Import signing assets
+        if: env.IOS_CERTIFICATE_BASE64 != ''
+        env:
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/app.keychain-db"
+          KEYCHAIN_PWD="$(openssl rand -base64 24)"
+          security create-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN"
+          echo "$IOS_CERTIFICATE_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -P "$IOS_CERTIFICATE_PASSWORD" \
+            -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PWD" "$KEYCHAIN" >/dev/null
+          PROFILES="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES"
+          echo "$IOS_PROVISION_PROFILE_BASE64" | base64 --decode > "$PROFILES/babymode.mobileprovision"
+
+      - name: Write ExportOptions.plist
+        if: env.IOS_CERTIFICATE_BASE64 != ''
+        working-directory: ios
+        env:
+          IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          IOS_EXPORT_METHOD: ${{ secrets.IOS_EXPORT_METHOD }}
+        run: |
+          METHOD="${IOS_EXPORT_METHOD:-development}"
+          cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>${METHOD}</string>
+            <key>teamID</key><string>${IOS_TEAM_ID}</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>compileBitcode</key><false/>
+            <key>stripSwiftSymbols</key><true/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Archive + export signed .ipa
+        if: env.IOS_CERTIFICATE_BASE64 != ''
+        working-directory: ios
+        env:
+          IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          IOS_PROVISION_PROFILE_NAME: ${{ secrets.IOS_PROVISION_PROFILE_NAME }}
+          IOS_CODE_SIGN_IDENTITY: ${{ secrets.IOS_CODE_SIGN_IDENTITY }}
+        run: |
+          xcodebuild archive \
+            -workspace BabyMode.xcworkspace \
+            -scheme BabyMode \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath "$RUNNER_TEMP/BabyMode.xcarchive" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="$IOS_TEAM_ID" \
+            PROVISIONING_PROFILE_SPECIFIER="$IOS_PROVISION_PROFILE_NAME" \
+            CODE_SIGN_IDENTITY="${IOS_CODE_SIGN_IDENTITY:-Apple Distribution}"
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/BabyMode.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist ExportOptions.plist
+
+      - name: Upload signed .ipa
+        if: env.IOS_CERTIFICATE_BASE64 != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: babymode-ios-ipa
+          path: ${{ runner.temp }}/export/*.ipa
           if-no-files-found: error

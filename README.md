@@ -69,8 +69,12 @@ artifacts on every push/PR:
 
 | Artifact | Job | What it is |
 |---|---|---|
-| `babymode-android-apk` | ubuntu | debug-signed **release APK** (`adb install`) |
-| `babymode-ios-simulator-app` | macOS | unsigned **Simulator `.app`** (a signed `.ipa` needs Apple certs) |
+| `babymode-android-apk` | ubuntu | **release APK** (debug-signed by default; release-signed when secrets are set) |
+| `babymode-ios-simulator-app` | macOS | unsigned **Simulator `.app`** (default) |
+| `babymode-ios-ipa` | macOS | signed device **`.ipa`** (only when iOS signing secrets are set) |
+
+Add signing secrets to emit fully signed builds — see
+[`docs/RELEASE_SIGNING.md`](docs/RELEASE_SIGNING.md).
 
 > **Activate CI:** the pipeline definition is committed at [`ci/build.yml`](ci/build.yml)
 > rather than `.github/workflows/` because the automation that authored it lacked

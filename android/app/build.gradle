@@ -92,15 +92,28 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        // Real release signing is activated only when the upload-keystore
+        // properties are provided (CI injects them from repository secrets; see
+        // docs/RELEASE_SIGNING.md). Without them the build falls back to debug
+        // signing so `assembleRelease` still succeeds locally and in forks.
+        release {
+            if (project.hasProperty('BABYMODE_UPLOAD_STORE_FILE')) {
+                storeFile file(project.property('BABYMODE_UPLOAD_STORE_FILE'))
+                storePassword project.property('BABYMODE_UPLOAD_STORE_PASSWORD')
+                keyAlias project.property('BABYMODE_UPLOAD_KEY_ALIAS')
+                keyPassword project.property('BABYMODE_UPLOAD_KEY_PASSWORD')
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            // Use the real release keystore when configured, otherwise debug.
+            signingConfig project.hasProperty('BABYMODE_UPLOAD_STORE_FILE')
+                ? signingConfigs.release
+                : signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
