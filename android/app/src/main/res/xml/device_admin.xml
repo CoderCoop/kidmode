@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Device-admin policy declaration referenced by KioskDeviceAdminReceiver.
+  The empty policy set is sufficient for lock-task / Device Owner use; no
+  intrusive admin powers (wipe, password) are requested.
+-->
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-policies>
+    <limit-password />
+    <watch-login />
+    <force-lock />
+  </uses-policies>
+</device-admin>
