@@ -1,0 +1,39 @@
+// Local React Native library module. It is built as part of the app's Gradle
+// build (pulled in by autolinking), so it inherits AGP, the Kotlin plugin, and
+// the React Native version substitution from the root project's classpath — no
+// buildscript{} block or hard-coded versions needed here.
+
+apply plugin: "com.android.library"
+apply plugin: "org.jetbrains.kotlin.android"
+
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+android {
+  namespace "com.babymode.kiosk"
+  compileSdk safeExtGet("compileSdkVersion", 35)
+
+  defaultConfig {
+    minSdk safeExtGet("minSdkVersion", 24)
+  }
+
+  buildFeatures {
+    buildConfig false
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+}
+
+repositories {
+  google()
+  mavenCentral()
+}
+
+dependencies {
+  // Version comes from the React Native Gradle plugin applied at the root.
+  implementation "com.facebook.react:react-android"
+}

@@ -6,9 +6,10 @@ screen pinning / iOS Guided Access), hides the OS, and exposes only a resilient,
 multi-touch play canvas with pluggable activities. A parent-only gate — four
 corner taps followed by a randomized PIN pad — is the sole way out.
 
-> **Status:** complete JS/TS application + hand-written native modules for both
-> platforms. Drop the native modules into an app scaffold (see
-> [`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md)) and run.
+> **Status:** build-ready. Complete JS/TS app + full native projects
+> (`android/`, `ios/`) with the Kiosk native code packaged as a local,
+> autolinked module (`modules/react-native-kiosk/`). CI produces installable
+> app packages on every push — see [Builds](#builds).
 
 ---
 
@@ -55,12 +56,26 @@ npm run lint
 npm test
 ```
 
-To run on a device/emulator you first need a native shell for the two source
-folders — see [`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md). Then:
+To run on a device/emulator (native projects are already in the repo):
 
 ```bash
-npm run android   # or: npm run ios
+npm run android   # or: npm run ios  (macOS: bundle exec pod install first)
 ```
+
+## Builds
+
+CI (`.github/workflows/build.yml`) type-checks, lints, and tests, then builds
+**packaged apps** as downloadable artifacts on every push/PR:
+
+| Artifact | Job | What it is |
+|---|---|---|
+| `babymode-android-apk` | ubuntu | debug-signed **release APK** (`adb install`) |
+| `babymode-ios-simulator-app` | macOS | unsigned **Simulator `.app`** (a signed `.ipa` needs Apple certs) |
+
+Build locally: `cd android && ./gradlew assembleRelease`. See
+[`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md) for tooling, the module layout,
+and the strongest-lockdown provisioning steps (Android Device Owner / iOS
+supervised Single App Mode).
 
 ## Key source files
 
