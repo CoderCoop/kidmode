@@ -84,10 +84,10 @@ jobs:
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
           cat >> android/gradle.properties <<EOF
-          BABYMODE_UPLOAD_STORE_FILE=release.keystore
-          BABYMODE_UPLOAD_STORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD
-          BABYMODE_UPLOAD_KEY_ALIAS=$ANDROID_KEY_ALIAS
-          BABYMODE_UPLOAD_KEY_PASSWORD=$ANDROID_KEY_PASSWORD
+          KIDMODE_UPLOAD_STORE_FILE=release.keystore
+          KIDMODE_UPLOAD_STORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD
+          KIDMODE_UPLOAD_KEY_ALIAS=$ANDROID_KEY_ALIAS
+          KIDMODE_UPLOAD_KEY_PASSWORD=$ANDROID_KEY_PASSWORD
           EOF
 
       - name: Gradle cache
@@ -106,7 +106,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: babymode-android-apk
+          name: kidmode-android-apk
           path: android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
@@ -144,8 +144,8 @@ jobs:
         working-directory: ios
         run: |
           xcodebuild \
-            -workspace BabyMode.xcworkspace \
-            -scheme BabyMode \
+            -workspace KidMode.xcworkspace \
+            -scheme KidMode \
             -configuration Release \
             -sdk iphonesimulator \
             -derivedDataPath build \
@@ -156,16 +156,16 @@ jobs:
         if: env.IOS_CERTIFICATE_BASE64 == ''
         working-directory: ios
         run: |
-          APP=$(find build/Build/Products -name 'BabyMode.app' -maxdepth 3 | head -1)
+          APP=$(find build/Build/Products -name 'KidMode.app' -maxdepth 3 | head -1)
           echo "Found app at: $APP"; test -n "$APP"
-          ditto -c -k --sequesterRsrc --keepParent "$APP" BabyMode-simulator.app.zip
+          ditto -c -k --sequesterRsrc --keepParent "$APP" KidMode-simulator.app.zip
 
       - name: Upload Simulator app
         if: env.IOS_CERTIFICATE_BASE64 == ''
         uses: actions/upload-artifact@v4
         with:
-          name: babymode-ios-simulator-app
-          path: ios/BabyMode-simulator.app.zip
+          name: kidmode-ios-simulator-app
+          path: ios/KidMode-simulator.app.zip
           if-no-files-found: error
 
       # ---- Signed path (signing secrets present) --------------------------
@@ -187,7 +187,7 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PWD" "$KEYCHAIN" >/dev/null
           PROFILES="$HOME/Library/MobileDevice/Provisioning Profiles"
           mkdir -p "$PROFILES"
-          echo "$IOS_PROVISION_PROFILE_BASE64" | base64 --decode > "$PROFILES/babymode.mobileprovision"
+          echo "$IOS_PROVISION_PROFILE_BASE64" | base64 --decode > "$PROFILES/kidmode.mobileprovision"
 
       - name: Write ExportOptions.plist
         if: env.IOS_CERTIFICATE_BASE64 != ''
@@ -223,17 +223,17 @@ jobs:
           IOS_CODE_SIGN_IDENTITY: ${{ secrets.IOS_CODE_SIGN_IDENTITY }}
         run: |
           xcodebuild archive \
-            -workspace BabyMode.xcworkspace \
-            -scheme BabyMode \
+            -workspace KidMode.xcworkspace \
+            -scheme KidMode \
             -configuration Release \
             -sdk iphoneos \
-            -archivePath "$RUNNER_TEMP/BabyMode.xcarchive" \
+            -archivePath "$RUNNER_TEMP/KidMode.xcarchive" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="$IOS_TEAM_ID" \
             PROVISIONING_PROFILE_SPECIFIER="$IOS_PROVISION_PROFILE_NAME" \
             CODE_SIGN_IDENTITY="${IOS_CODE_SIGN_IDENTITY:-Apple Distribution}"
           xcodebuild -exportArchive \
-            -archivePath "$RUNNER_TEMP/BabyMode.xcarchive" \
+            -archivePath "$RUNNER_TEMP/KidMode.xcarchive" \
             -exportPath "$RUNNER_TEMP/export" \
             -exportOptionsPlist ExportOptions.plist
 
@@ -241,7 +241,7 @@ jobs:
         if: env.IOS_CERTIFICATE_BASE64 != ''
         uses: actions/upload-artifact@v4
         with:
-          name: babymode-ios-ipa
+          name: kidmode-ios-ipa
           path: ${{ runner.temp }}/export/*.ipa
           if-no-files-found: error
 

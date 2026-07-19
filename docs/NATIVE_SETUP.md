@@ -21,10 +21,10 @@ Every push/PR runs three jobs:
 
 1. **checks** — `typecheck` + `lint` + unit tests (fast gate).
 2. **android** — installs the pinned NDK/CMake, runs `./gradlew assembleRelease`,
-   and uploads **`babymode-android-apk`** (a debug-signed release APK you can
+   and uploads **`kidmode-android-apk`** (a debug-signed release APK you can
    `adb install`).
 3. **ios** — `pod install` then an unsigned **iphonesimulator** build, uploading
-   **`babymode-ios-simulator-app`** (a `.app` you can drag onto a running
+   **`kidmode-ios-simulator-app`** (a `.app` you can drag onto a running
    Simulator). A signed device `.ipa` requires Apple signing secrets, which this
    public workflow intentionally does not carry — add a signed
    `-exportArchive` step with your certs to produce one.
@@ -58,7 +58,7 @@ modules/react-native-kiosk/
 │   ├── build.gradle                 # com.android.library, inherits root versions
 │   └── src/main/
 │       ├── AndroidManifest.xml       # DeviceAdminReceiver (merged into app)
-│       ├── java/com/babymode/kiosk/  # KioskModule / KioskPackage / KioskDeviceAdminReceiver
+│       ├── java/com/kidmode/kiosk/  # KioskModule / KioskPackage / KioskDeviceAdminReceiver
 │       └── res/{xml,values}/         # device_admin.xml + strings
 └── ios/
     ├── Kiosk.swift                   # RCTEventEmitter implementation
@@ -75,7 +75,7 @@ The app consumes it through `src/kiosk/NativeKiosk.ts` via `NativeModules.Kiosk`
 On a **factory-reset device with no accounts**:
 
 ```bash
-adb shell dpm set-device-owner com.babymode/com.babymode.kiosk.KioskDeviceAdminReceiver
+adb shell dpm set-device-owner com.kidmode/com.kidmode.kiosk.KioskDeviceAdminReceiver
 ```
 
 This unlocks no-confirmation screen pinning + notification/global-actions

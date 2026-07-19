@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.babymode"
+    namespace "com.kidmode"
     defaultConfig {
-        applicationId "com.babymode"
+        applicationId "com.kidmode"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -97,11 +97,11 @@ android {
         // docs/RELEASE_SIGNING.md). Without them the build falls back to debug
         // signing so `assembleRelease` still succeeds locally and in forks.
         release {
-            if (project.hasProperty('BABYMODE_UPLOAD_STORE_FILE')) {
-                storeFile file(project.property('BABYMODE_UPLOAD_STORE_FILE'))
-                storePassword project.property('BABYMODE_UPLOAD_STORE_PASSWORD')
-                keyAlias project.property('BABYMODE_UPLOAD_KEY_ALIAS')
-                keyPassword project.property('BABYMODE_UPLOAD_KEY_PASSWORD')
+            if (project.hasProperty('KIDMODE_UPLOAD_STORE_FILE')) {
+                storeFile file(project.property('KIDMODE_UPLOAD_STORE_FILE'))
+                storePassword project.property('KIDMODE_UPLOAD_STORE_PASSWORD')
+                keyAlias project.property('KIDMODE_UPLOAD_KEY_ALIAS')
+                keyPassword project.property('KIDMODE_UPLOAD_KEY_PASSWORD')
             }
         }
     }
@@ -111,7 +111,7 @@ android {
         }
         release {
             // Use the real release keystore when configured, otherwise debug.
-            signingConfig project.hasProperty('BABYMODE_UPLOAD_STORE_FILE')
+            signingConfig project.hasProperty('KIDMODE_UPLOAD_STORE_FILE')
                 ? signingConfigs.release
                 : signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds

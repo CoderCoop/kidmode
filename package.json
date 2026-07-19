@@ -1,5 +1,5 @@
 {
-  "name": "babymode",
+  "name": "kidmode",
   "version": "1.0.0",
   "private": true,
   "description": "A secure, interactive full-screen sandbox for children ages 0-5. Locks the device down (Android screen pinning / iOS Guided Access) and exposes only a resilient, multi-touch play canvas with pluggable activities.",

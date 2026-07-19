@@ -1,4 +1,4 @@
-package com.babymode
+package com.kidmode
 
 import android.app.Application
 import com.facebook.react.PackageList

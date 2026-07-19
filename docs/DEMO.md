@@ -1,6 +1,6 @@
 # Demo & walkthrough
 
-Two ways to see Baby Mode in action:
+Two ways to see Kid Mode in action:
 
 - **Interactive browser demo** — [`demo/index.html`](../demo/index.html). A
   faithful, self-contained HTML re-creation of the app (no build step): open the

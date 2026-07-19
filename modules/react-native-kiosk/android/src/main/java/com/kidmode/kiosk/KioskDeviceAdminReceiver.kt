@@ -1,4 +1,4 @@
-package com.babymode.kiosk
+package com.kidmode.kiosk
 
 import android.app.admin.DeviceAdminReceiver
 
@@ -8,7 +8,7 @@ import android.app.admin.DeviceAdminReceiver
  * notification suppression via lock-task features).
  *
  * Provision on a factory-reset / no-accounts device with:
- *   adb shell dpm set-device-owner com.babymode/.kiosk.KioskDeviceAdminReceiver
+ *   adb shell dpm set-device-owner com.kidmode/.kiosk.KioskDeviceAdminReceiver
  *
  * Without this the app still works — it falls back to standard screen pinning.
  */

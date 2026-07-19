@@ -10,7 +10,7 @@ function emit(level: Level, scope: string, msg: string, extra?: unknown): void {
   if (level === 'debug' && !__DEV__) {
     return;
   }
-  const tag = `[babymode:${scope}]`;
+  const tag = `[kidmode:${scope}]`;
   const sink = console[level] ?? console.log;
   if (extra !== undefined) {
     sink(tag, msg, extra);

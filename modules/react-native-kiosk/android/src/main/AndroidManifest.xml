@@ -9,7 +9,7 @@
 
   <application>
     <receiver
-        android:name="com.babymode.kiosk.KioskDeviceAdminReceiver"
+        android:name="com.kidmode.kiosk.KioskDeviceAdminReceiver"
         android:description="@string/kiosk_admin_description"
         android:permission="android.permission.BIND_DEVICE_ADMIN"
         android:exported="true">

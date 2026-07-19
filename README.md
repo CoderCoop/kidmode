@@ -1,4 +1,4 @@
-# Baby Mode 🍼
+# Kid Mode 🍼
 
 A secure, interactive full-screen **sandbox for children ages 0–5**, built with
 **React Native + TypeScript**. It locks the device into a single app (Android
@@ -23,7 +23,7 @@ activities, and the full parental-gate exit. Full walkthrough in
 ## Why it exists
 
 Hand a toddler a phone and within seconds they have dialled a contact, deleted an
-app, or bought something. Baby Mode turns the device into a dumb, delightful
+app, or bought something. Kid Mode turns the device into a dumb, delightful
 light-and-sound toy that a child physically **cannot** escape, while giving the
 grown-up a reliable, deliberate way back out.
 
@@ -76,9 +76,9 @@ artifacts on every push/PR:
 
 | Artifact | Job | What it is |
 |---|---|---|
-| `babymode-android-apk` | ubuntu | **release APK** (debug-signed by default; release-signed when secrets are set) |
-| `babymode-ios-simulator-app` | macOS | unsigned **Simulator `.app`** (default) |
-| `babymode-ios-ipa` | macOS | signed device **`.ipa`** (only when iOS signing secrets are set) |
+| `kidmode-android-apk` | ubuntu | **release APK** (debug-signed by default; release-signed when secrets are set) |
+| `kidmode-ios-simulator-app` | macOS | unsigned **Simulator `.app`** (default) |
+| `kidmode-ios-ipa` | macOS | signed device **`.ipa`** (only when iOS signing secrets are set) |
 
 Add signing secrets to emit fully signed builds — see
 [`docs/RELEASE_SIGNING.md`](docs/RELEASE_SIGNING.md).

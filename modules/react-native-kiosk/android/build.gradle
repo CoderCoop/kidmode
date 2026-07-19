@@ -11,7 +11,7 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-  namespace "com.babymode.kiosk"
+  namespace "com.kidmode.kiosk"
   compileSdk safeExtGet("compileSdkVersion", 35)
 
   defaultConfig {

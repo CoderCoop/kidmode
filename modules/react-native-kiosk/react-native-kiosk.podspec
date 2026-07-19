@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.summary      = package["description"]
   s.homepage     = "https://github.com/mchelen/babymode"
   s.license      = { :type => "MIT" }
-  s.authors      = { "Baby Mode" => "noreply@example.com" }
+  s.authors      = { "Kid Mode" => "noreply@example.com" }
   s.platforms    = { :ios => "13.4" }
   s.source       = { :git => "https://github.com/mchelen/babymode.git", :tag => "#{s.version}" }
 
