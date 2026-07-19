@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import React // RCTEventEmitter / sendEvent live in the React umbrella module
 
 /**
  * Native bridge for device lockdown on iOS.
