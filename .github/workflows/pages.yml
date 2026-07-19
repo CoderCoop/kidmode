@@ -1,11 +1,17 @@
-name: Deploy site to GitHub Pages
+name: Website
 
-# Publishes the static marketing/docs site in `site/` to GitHub Pages.
+# Builds and deploys the static marketing/docs site in `site/` to GitHub Pages.
+# This is fully separate from the app build (build.yml): website changes never
+# rebuild the native apps, and app changes never rebuild the website.
 # One-time setup: in the repo Settings → Pages, set "Source" to "GitHub Actions".
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'site/**'
+      - '.github/workflows/pages.yml'
+  pull_request:
     paths:
       - 'site/**'
       - '.github/workflows/pages.yml'
@@ -22,11 +28,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # Runs on every website change (including PRs) to validate that the site
+  # packages cleanly — without touching the live site.
+  build:
+    name: Build website
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,6 +45,17 @@ jobs:
         with:
           path: site
 
+  # Publishes the built site. Skipped on pull requests — only pushes to main
+  # (and manual runs) go live.
+  deploy:
+    name: Deploy website
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -14,10 +14,21 @@ name: Build packaged apps
 # See docs/RELEASE_SIGNING.md for the exact secret names/values. A fast `checks`
 # gate (typecheck + lint + unit tests) runs first; the native builds follow.
 
+# Website-only changes (site/, docs/, markdown) do NOT rebuild the app — the
+# static site has its own workflow (pages.yml). This build runs only when app
+# code, native projects, dependencies, or this workflow itself change.
 on:
   push:
     branches: ['**']
+    paths-ignore:
+      - 'site/**'
+      - 'docs/**'
+      - '**/*.md'
   pull_request:
+    paths-ignore:
+      - 'site/**'
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
 
 concurrency:
