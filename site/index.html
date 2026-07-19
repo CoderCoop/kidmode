@@ -765,7 +765,9 @@
     this.canvas.width = Math.round(this.W * dpr);
     this.canvas.height = Math.round(this.H * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.k = this.W / 390;
+    // Scale by the *smaller* dimension so effects stay proportional on wide
+    // full-screen canvases instead of ballooning to cover the whole screen.
+    this.k = Math.min(this.W, this.H) / 390;
     this.buildPads();
   };
 
@@ -854,9 +856,13 @@
     ctx.fillStyle = c; ctx.shadowColor = c; ctx.shadowBlur = 16 * k;
 
     if (e.type === "ripples"){
-      ctx.globalAlpha = (1 - p) * 0.9;
+      // An expanding ring (outline), not a filled disc — a real ripple that
+      // never floods the screen with colour on each touch.
+      ctx.globalAlpha = (1 - p);
       var rr = 60 * k * (0.25 + p * 2.4);
-      ctx.beginPath(); ctx.arc(e.x, e.y, rr, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = c;
+      ctx.lineWidth = Math.max(2, 13 * k * (1 - p * 0.7));
+      ctx.beginPath(); ctx.arc(e.x, e.y, rr, 0, Math.PI * 2); ctx.stroke();
 
     } else if (e.type === "pop"){
       var s = p < 0.6 ? (p / 0.6) * 1.15 : 1.15 + ((p - 0.6) / 0.4) * 0.9;
