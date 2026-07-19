@@ -312,6 +312,52 @@
   .tech-note a { color: var(--muted); }
   .tech-note a:hover { color: var(--ink); }
 
+  /* full-screen demo */
+  .fs-open-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; font-family: var(--font-display); font-weight: 800; font-size: 13.5px; color: var(--ink); background: rgba(20,20,32,0.6); border: 1px solid var(--line-strong); cursor: pointer; transition: border-color .15s, transform .15s; }
+  .fs-open-btn:hover { border-color: var(--teal); transform: translateY(-1px); }
+  .fsdemo { position: fixed; inset: 0; z-index: 1000; background: var(--canvas); display: none; }
+  .fsdemo.open { display: block; }
+  #fsdemo-canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: pointer; }
+  .fsdemo-topbar { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; justify-content: space-between; align-items: flex-start; padding: 16px; pointer-events: none; }
+  .fsdemo-topbar > * { pointer-events: auto; }
+  .fsdemo-exit { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 999px; font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff; background: rgba(6,6,12,0.72); border: 1px solid var(--line-strong); backdrop-filter: blur(6px); cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .fsdemo-exit .exit-fill { position: absolute; inset: 0; width: 0; background: var(--rose); opacity: .5; z-index: 0; }
+  .fsdemo-exit .exit-label { position: relative; z-index: 1; white-space: nowrap; }
+  .fsdemo-close { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 999px; font-size: 17px; color: var(--muted); background: rgba(6,6,12,0.72); border: 1px solid var(--line-strong); backdrop-filter: blur(6px); cursor: pointer; }
+  .fsdemo-close:hover { color: #fff; }
+  .fsdemo-chips { position: absolute; left: 0; right: 0; bottom: 22px; z-index: 3; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 16px; }
+  .fsdemo-chips .chip { font-size: 13px; padding: 8px 13px; }
+
+  /* coach marks */
+  .coach { position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 6; max-width: 440px; width: calc(100% - 32px); background: rgba(12,12,20,0.94); border: 1px solid var(--line-strong); border-radius: var(--r-lg); padding: 20px 22px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+  .coach.hidden { display: none; }
+  .coach .coach-step { font-family: var(--font-display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; color: var(--teal); text-transform: uppercase; }
+  .coach p { color: var(--ink); font-size: 16px; margin: 9px 0 16px; line-height: 1.45; text-wrap: balance; }
+  .coach .coach-next { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; border-radius: 999px; font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff; background: linear-gradient(135deg, var(--rose), var(--violet)); border: none; cursor: pointer; }
+  .coach-ring { position: fixed; z-index: 5; border: 2px solid var(--teal); border-radius: 18px; box-shadow: 0 0 0 4000px rgba(4,4,10,0.55), 0 0 22px var(--teal); pointer-events: none; transition: left .25s ease, top .25s ease, width .25s ease, height .25s ease; }
+  .coach-ring.hidden { display: none; }
+
+  /* demo gate (unlock) */
+  .fsdemo-gate { position: absolute; inset: 0; z-index: 7; background: rgba(8,8,14,0.94); backdrop-filter: blur(8px); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; }
+  .fsdemo-gate.open { display: flex; }
+  .fsdemo-gate h4 { font-family: var(--font-display); font-weight: 800; font-size: 21px; margin: 0; color: #fff; text-align: center; }
+  .fsdemo-gate .demo-pin-note { color: var(--muted); font-size: 13px; margin: 0; text-align: center; }
+  .fsdemo-gate .pips { display: flex; gap: 12px; margin: 8px 0; }
+  .fsdemo-gate .pips i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--muted); transition: background .15s; }
+  .fsdemo-gate .pips i.on { background: #fff; border-color: #fff; }
+  .fsdemo-gate .pips.err i { border-color: var(--danger); }
+  .fsdemo-gate .pinpad { display: grid; grid-template-columns: repeat(3, 74px); gap: 12px; }
+  .fsdemo-gate .pinpad button { width: 74px; height: 74px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface-2); color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 26px; cursor: pointer; }
+  .fsdemo-gate .pinpad button:active { background: var(--success); }
+  .fsdemo-gate .gate-actions { display: flex; gap: 22px; margin-top: 10px; }
+  .fsdemo-gate .gate-actions button { background: none; border: none; color: var(--muted); font-size: 14px; cursor: pointer; text-decoration: underline; }
+  .fsdemo-recovery { display: none; flex-direction: column; align-items: center; gap: 16px; }
+  .fsdemo-recovery.open { display: flex; }
+  .fsdemo-hold { position: relative; overflow: hidden; width: 250px; height: 62px; border-radius: 16px; border: 1px solid var(--muted); background: var(--surface-2); color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 17px; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; }
+  .fsdemo-hold .hold-fill { position: absolute; inset: 0; width: 0; background: var(--success); }
+  .fsdemo-hold span { position: relative; z-index: 1; }
+  .fsdemo-toast { position: absolute; z-index: 8; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: var(--font-display); font-weight: 800; font-size: 30px; color: var(--success); display: none; }
+
   /* reveal */
   .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
   .reveal.in { opacity: 1; transform: none; }
@@ -344,7 +390,7 @@
         <h1>Let them play with your phone. <span class="glow">Without the worry.</span></h1>
         <p class="lede">Kids love your phone — but one stray tap can send an email or delete an app. Kid Mode turns it into a full-screen toy of light, colour and sound, where nothing they do can change a thing. You decide when play ends.</p>
         <div class="cta-row">
-          <a class="cta cta-primary" href="#demo">Try the live demo →</a>
+          <a class="cta cta-primary" href="#demo" data-open-fsdemo>Try the full-screen demo →</a>
           <a class="cta cta-ghost" href="#story">See how you use it</a>
         </div>
         <div class="hero-stats">
@@ -364,6 +410,7 @@
             </div>
           </div>
           <p class="device-caption">This phone runs the <b>real activities</b> right here in your browser — tap or drag inside it, or pick a world below the screen.</p>
+          <button class="fs-open-btn" data-open-fsdemo type="button">⛶ Open full-screen demo</button>
         </div>
       </div>
     </div>
@@ -591,6 +638,54 @@
     <div>Built for small hands · MIT licensed</div>
   </div>
 </footer>
+
+<!-- FULL-SCREEN DEMO -->
+<div class="fsdemo" id="fsdemo" aria-hidden="true">
+  <canvas id="fsdemo-canvas" data-demo data-activity="ripples" data-autoplay="1" data-interactive="1" aria-label="Full-screen Kid Mode play canvas — tap or drag to play"></canvas>
+
+  <div class="fsdemo-topbar">
+    <button class="fsdemo-exit" id="fsdemo-exit" type="button" aria-label="Press and hold to exit">
+      <span class="exit-fill" id="fsdemo-exit-fill"></span>
+      <span class="exit-label">✋ Hold to exit</span>
+    </button>
+    <button class="fsdemo-close" id="fsdemo-close" type="button" aria-label="Close the demo">✕</button>
+  </div>
+
+  <div class="fsdemo-chips" id="fsdemo-chips" role="group" aria-label="Choose an activity"></div>
+
+  <!-- unlock gate -->
+  <div class="fsdemo-gate" id="fsdemo-gate" aria-hidden="true">
+    <div id="fsdemo-pin">
+      <h4>Enter your PIN to unlock</h4>
+      <p class="demo-pin-note">Demo PIN: <b>2468</b></p>
+      <div class="pips" id="fsdemo-pips"><i></i><i></i><i></i><i></i></div>
+      <div class="pinpad" id="fsdemo-pinpad"></div>
+      <div class="gate-actions">
+        <button id="fsdemo-forgot" type="button">Forgot PIN?</button>
+        <button id="fsdemo-gate-back" type="button">Back to play</button>
+      </div>
+    </div>
+    <div class="fsdemo-recovery" id="fsdemo-recovery">
+      <h4>Forgot your PIN?</h4>
+      <p class="demo-pin-note">No problem — press and hold until it fills. No PIN needed.</p>
+      <button class="fsdemo-hold" id="fsdemo-hold" type="button" aria-label="Press and hold to exit">
+        <span class="hold-fill" id="fsdemo-hold-fill"></span>
+        <span>Hold to exit</span>
+      </button>
+      <div class="gate-actions"><button id="fsdemo-recovery-back" type="button">Back to PIN</button></div>
+    </div>
+  </div>
+
+  <!-- guided tooltips -->
+  <div class="coach hidden" id="coach">
+    <div class="coach-step" id="coach-step"></div>
+    <p id="coach-text"></p>
+    <button class="coach-next" id="coach-next" type="button">Next →</button>
+  </div>
+  <div class="coach-ring hidden" id="coach-ring"></div>
+
+  <div class="fsdemo-toast" id="fsdemo-toast">Unlocked ✓</div>
+</div>
 
 <script>
 (function () {
@@ -825,6 +920,134 @@
     pinpad.innerHTML = "";
     digits.forEach(function(n){ var b = document.createElement("button"); b.type = "button"; b.textContent = n; b.tabIndex = -1; pinpad.appendChild(b); });
   }
+
+  // ---- full-screen demo (with guided tooltips + unlock flow) ----
+  (function initFsDemo(){
+    var overlay = document.getElementById("fsdemo");
+    if (!overlay) return;
+    var canvas = document.getElementById("fsdemo-canvas");
+    var demo = demos.find(function(d){ return d.canvas === canvas; });
+    var chipHost = document.getElementById("fsdemo-chips");
+    if (demo && chipHost) wireChips(chipHost, demo);
+
+    function open(){
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+      if (demo){ demo.effects.length = 0; demo.visible = true; demo.resize(); }
+      if (overlay.requestFullscreen){ try { overlay.requestFullscreen().catch(function(){}); } catch (e) {} }
+      startCoach();
+    }
+    function close(){
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+      hideGate(); hideCoach(); cancelExit();
+      if (document.fullscreenElement && document.exitFullscreen){ try { document.exitFullscreen().catch(function(){}); } catch (e) {} }
+    }
+
+    document.querySelectorAll("[data-open-fsdemo]").forEach(function(btn){
+      btn.addEventListener("click", function(e){ e.preventDefault(); open(); });
+    });
+    document.getElementById("fsdemo-close").addEventListener("click", close);
+    document.addEventListener("keydown", function(e){ if (e.key === "Escape" && overlay.classList.contains("open")) close(); });
+
+    // --- "hold to exit" (the two-finger hold analogue on desktop) ---
+    var exitFill = document.getElementById("fsdemo-exit-fill");
+    var exitTimer = null;
+    function startExit(){
+      exitFill.style.transition = "width 1s linear"; exitFill.style.width = "100%";
+      exitTimer = setTimeout(function(){ resetExitFill(); showGate(); }, 1000);
+    }
+    function cancelExit(){ if (exitTimer){ clearTimeout(exitTimer); exitTimer = null; } resetExitFill(); }
+    function resetExitFill(){ exitFill.style.transition = "width .15s linear"; exitFill.style.width = "0"; }
+    var exitBtn = document.getElementById("fsdemo-exit");
+    exitBtn.addEventListener("pointerdown", function(e){ e.preventDefault(); startExit(); });
+    exitBtn.addEventListener("pointerup", cancelExit);
+    exitBtn.addEventListener("pointerleave", cancelExit);
+    exitBtn.addEventListener("pointercancel", cancelExit);
+
+    // --- unlock gate ---
+    var gate = document.getElementById("fsdemo-gate");
+    var pinView = document.getElementById("fsdemo-pin");
+    var recovery = document.getElementById("fsdemo-recovery");
+    var pinpadEl = document.getElementById("fsdemo-pinpad");
+    var pipsEl = document.getElementById("fsdemo-pips");
+    var entry = "";
+    var PIN = "2468";
+
+    function buildPad(){
+      var d = [1,2,3,4,5,6,7,8,9,0];
+      for (var i = d.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = d[i]; d[i] = d[j]; d[j] = t; }
+      pinpadEl.innerHTML = "";
+      d.forEach(function(n){
+        var b = document.createElement("button"); b.type = "button"; b.textContent = n;
+        b.addEventListener("click", function(){ pressDigit(n); });
+        pinpadEl.appendChild(b);
+      });
+    }
+    function renderPips(){ var k = pipsEl.children; for (var i = 0; i < k.length; i++){ k[i].classList.toggle("on", i < entry.length); } }
+    function pressDigit(n){
+      pipsEl.classList.remove("err");
+      entry += String(n); renderPips();
+      if (entry.length >= 4){
+        if (entry === PIN){ unlock(); }
+        else { entry = ""; pipsEl.classList.add("err"); renderPips(); buildPad(); }
+      }
+    }
+    function showGate(){ entry = ""; renderPips(); buildPad(); recovery.classList.remove("open"); pinView.style.display = "block"; gate.classList.add("open"); gate.setAttribute("aria-hidden", "false"); hideCoach(); }
+    function hideGate(){ gate.classList.remove("open"); gate.setAttribute("aria-hidden", "true"); recovery.classList.remove("open"); pinView.style.display = "block"; }
+    document.getElementById("fsdemo-gate-back").addEventListener("click", hideGate);
+    document.getElementById("fsdemo-forgot").addEventListener("click", function(){ pinView.style.display = "none"; recovery.classList.add("open"); });
+    document.getElementById("fsdemo-recovery-back").addEventListener("click", function(){ recovery.classList.remove("open"); pinView.style.display = "block"; });
+
+    // recovery press-and-hold
+    var holdFill = document.getElementById("fsdemo-hold-fill");
+    var holdTimer = null;
+    function startHold(){ holdFill.style.transition = "width 1.6s linear"; holdFill.style.width = "100%"; holdTimer = setTimeout(unlock, 1600); }
+    function cancelHold(){ if (holdTimer){ clearTimeout(holdTimer); holdTimer = null; } holdFill.style.transition = "width .12s linear"; holdFill.style.width = "0"; }
+    var holdBtn = document.getElementById("fsdemo-hold");
+    holdBtn.addEventListener("pointerdown", function(e){ e.preventDefault(); startHold(); });
+    holdBtn.addEventListener("pointerup", cancelHold);
+    holdBtn.addEventListener("pointerleave", cancelHold);
+    holdBtn.addEventListener("pointercancel", cancelHold);
+
+    var toast = document.getElementById("fsdemo-toast");
+    function unlock(){ cancelHold(); hideGate(); toast.style.display = "block"; setTimeout(function(){ toast.style.display = "none"; close(); }, 900); }
+
+    // --- coach marks ---
+    var coach = document.getElementById("coach");
+    var ring = document.getElementById("coach-ring");
+    var stepEl = document.getElementById("coach-step");
+    var textEl = document.getElementById("coach-text");
+    var nextBtn = document.getElementById("coach-next");
+    var steps = [
+      { target: null, text: "Tap or drag anywhere on the screen — every touch makes light, colour and sound. Go on, mash it." },
+      { target: "#fsdemo-chips", text: "Switch between play worlds here: ripples, popping shapes, a sound pad, comets and sparkles." },
+      { target: "#fsdemo-exit", text: "To leave, press and hold “Hold to exit” for a second, then type the PIN (2468). In the real app you hold two fingers anywhere. Forgot the PIN? A hold-to-exit fallback always works." }
+    ];
+    var stepIdx = 0;
+    function startCoach(){ if (reduce){ hideCoach(); return; } stepIdx = 0; showStep(); }
+    function showStep(){
+      var s = steps[stepIdx];
+      stepEl.textContent = "Step " + (stepIdx + 1) + " of " + steps.length;
+      textEl.textContent = s.text;
+      nextBtn.textContent = stepIdx === steps.length - 1 ? "Got it — let me play" : "Next →";
+      coach.classList.remove("hidden");
+      positionRing(s.target);
+    }
+    function positionRing(sel){
+      var el = sel ? document.querySelector(sel) : null;
+      if (!el){ ring.classList.add("hidden"); return; }
+      var r = el.getBoundingClientRect(), pad = 8;
+      ring.style.left = (r.left - pad) + "px";
+      ring.style.top = (r.top - pad) + "px";
+      ring.style.width = (r.width + pad * 2) + "px";
+      ring.style.height = (r.height + pad * 2) + "px";
+      ring.classList.remove("hidden");
+    }
+    nextBtn.addEventListener("click", function(){ stepIdx++; if (stepIdx >= steps.length){ hideCoach(); } else { showStep(); } });
+    function hideCoach(){ coach.classList.add("hidden"); ring.classList.add("hidden"); }
+    window.addEventListener("resize", function(){ if (!coach.classList.contains("hidden")) positionRing(steps[stepIdx].target); });
+  })();
 
   // ---- scroll reveal ----
   if (window.IntersectionObserver && !reduce){
