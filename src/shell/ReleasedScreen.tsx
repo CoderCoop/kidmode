@@ -17,7 +17,7 @@ export function ReleasedScreen({onResume}: Props): React.JSX.Element {
       <Text style={styles.emoji}>🔓</Text>
       <Text style={styles.title}>Lockdown released</Text>
       <Text style={styles.body}>
-        The device is unlocked. You can leave the app, or resume Baby Mode.
+        The device is unlocked. You can leave the app, or resume Kid Mode.
       </Text>
       <Pressable
         onPress={onResume}

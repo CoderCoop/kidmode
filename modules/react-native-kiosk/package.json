@@ -1,0 +1,20 @@
+{
+  "name": "react-native-kiosk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Native device lockdown (kiosk) bridge for Kid Mode: Android screen pinning / lock-task and iOS Guided Access / Single App Mode.",
+  "license": "MIT",
+  "main": "src/index.js",
+  "react-native": "src/index.js",
+  "source": "src/index.js",
+  "files": [
+    "src",
+    "android",
+    "ios",
+    "react-native-kiosk.podspec"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  }
+}

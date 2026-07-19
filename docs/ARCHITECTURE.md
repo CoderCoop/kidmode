@@ -1,6 +1,6 @@
 # Architecture
 
-Baby Mode is organised around four decoupled subsystems, each in its own folder
+Kid Mode is organised around four decoupled subsystems, each in its own folder
 under `src/`. They communicate through narrow, typed contracts so any one can be
 replaced without touching the others.
 
@@ -37,7 +37,7 @@ import. `hasNativeKiosk` tells the UI whether lockdown is real or best-effort.
 | Android | Device Owner + `setLockTaskFeatures` (no confirmation, notifications off) | `startLockTask` screen pinning (+ JS Back-trap & immersive) |
 | iOS | Autonomous Single App Mode (supervised devices) | user-enabled Guided Access, which the app detects & uses |
 
-The native modules also emit `BabyModeKioskChanged` so system-initiated changes
+The native modules also emit `KidModeKioskChanged` so system-initiated changes
 propagate back into JS.
 
 ## 2. Parental gate (`src/parentalGate`)

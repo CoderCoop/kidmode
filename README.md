@@ -1,4 +1,4 @@
-# Baby Mode 🍼
+# Kid Mode 🍼
 
 A secure, interactive full-screen **sandbox for children ages 0–5**, built with
 **React Native + TypeScript**. It locks the device into a single app (Android
@@ -6,16 +6,24 @@ screen pinning / iOS Guided Access), hides the OS, and exposes only a resilient,
 multi-touch play canvas with pluggable activities. A parent-only gate — four
 corner taps followed by a randomized PIN pad — is the sole way out.
 
-> **Status:** complete JS/TS application + hand-written native modules for both
-> platforms. Drop the native modules into an app scaffold (see
-> [`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md)) and run.
+> **Status:** build-ready. Complete JS/TS app + full native projects
+> (`android/`, `ios/`) with the Kiosk native code packaged as a local,
+> autolinked module (`modules/react-native-kiosk/`). CI produces installable
+> app packages on every push — see [Builds](#builds).
 
 ---
+
+## Demo
+
+Open [`demo/index.html`](demo/index.html) in any browser for a self-contained,
+interactive re-creation — a simulated phone running the locked canvas, all three
+activities, and the full parental-gate exit. Full walkthrough in
+[`docs/DEMO.md`](docs/DEMO.md).
 
 ## Why it exists
 
 Hand a toddler a phone and within seconds they have dialled a contact, deleted an
-app, or bought something. Baby Mode turns the device into a dumb, delightful
+app, or bought something. Kid Mode turns the device into a dumb, delightful
 light-and-sound toy that a child physically **cannot** escape, while giving the
 grown-up a reliable, deliberate way back out.
 
@@ -55,12 +63,37 @@ npm run lint
 npm test
 ```
 
-To run on a device/emulator you first need a native shell for the two source
-folders — see [`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md). Then:
+To run on a device/emulator (native projects are already in the repo):
 
 ```bash
-npm run android   # or: npm run ios
+npm run android   # or: npm run ios  (macOS: bundle exec pod install first)
 ```
+
+## Builds
+
+CI type-checks, lints, and tests, then builds **packaged apps** as downloadable
+artifacts on every push/PR:
+
+| Artifact | Job | What it is |
+|---|---|---|
+| `kidmode-android-apk` | ubuntu | **release APK** (debug-signed by default; release-signed when secrets are set) |
+| `kidmode-ios-simulator-app` | macOS | unsigned **Simulator `.app`** (default) |
+| `kidmode-ios-ipa` | macOS | signed device **`.ipa`** (only when iOS signing secrets are set) |
+
+Add signing secrets to emit fully signed builds — see
+[`docs/RELEASE_SIGNING.md`](docs/RELEASE_SIGNING.md).
+
+> **Activate CI:** the pipeline definition is committed at [`ci/build.yml`](ci/build.yml)
+> rather than `.github/workflows/` because the automation that authored it lacked
+> GitHub *workflow* scope. Move it once to activate:
+> `git mv ci/build.yml .github/workflows/build.yml && git commit && git push`
+> (from an environment whose credentials include workflow scope, or via the
+> GitHub web editor).
+
+Build locally: `cd android && ./gradlew assembleRelease`. See
+[`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md) for tooling, the module layout,
+and the strongest-lockdown provisioning steps (Android Device Owner / iOS
+supervised Single App Mode).
 
 ## Key source files
 
