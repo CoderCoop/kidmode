@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Baby Mode — Interactive Demo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+</style>
+<style>
+  :root {
+    /* Page chrome — cool neutrals biased toward the app's blues/violets. */
+    --bg: #F4F5FB;
+    --panel: #FFFFFF;
+    --panel-2: #FBFBFE;
+    --ink: #16161F;
+    --muted: #5A5A6E;
+    --line: #E5E5F0;
+    --accent: #0F9E8E;
+    --accent-ink: #05302B;
+    /* Device screen (the real app palette — fixed, always dark). */
+    --canvas: #0B0B10;
+    --canvas-alt: #141420;
+    --scrim: rgba(0,0,0,.72);
+    --radius: 18px;
+    --shadow: 0 1px 2px rgba(20,20,40,.04), 0 12px 40px rgba(30,30,70,.10);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0C0C12;
+      --panel: #16161F;
+      --panel-2: #1B1B25;
+      --ink: #F2F2F8;
+      --muted: #9C9CB2;
+      --line: #262632;
+      --accent: #2EC4B6;
+      --accent-ink: #04201C;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 44px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F4F5FB; --panel: #FFFFFF; --panel-2: #FBFBFE; --ink: #16161F;
+    --muted: #5A5A6E; --line: #E5E5F0; --accent: #0F9E8E; --accent-ink: #05302B;
+    --shadow: 0 1px 2px rgba(20,20,40,.04), 0 12px 40px rgba(30,30,70,.10);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0C0C12; --panel: #16161F; --panel-2: #1B1B25; --ink: #F2F2F8;
+    --muted: #9C9CB2; --line: #262632; --accent: #2EC4B6; --accent-ink: #04201C;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 44px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: clamp(20px, 4vw, 56px); }
+
+  header.top { margin-bottom: clamp(24px, 4vw, 44px); }
+  .eyebrow {
+    font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 46px); line-height: 1.04; margin: 0 0 12px;
+    letter-spacing: -.02em; text-wrap: balance; font-weight: 800;
+  }
+  .lede { font-size: clamp(15px, 2vw, 18px); color: var(--muted); max-width: 60ch; margin: 0; }
+
+  .grid {
+    display: grid; gap: clamp(24px, 4vw, 48px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    align-items: start;
+  }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Device ---------- */
+  .stage {
+    position: sticky; top: 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
+  }
+  @media (max-width: 860px) { .stage { position: static; } }
+  .phone-glow { position: relative; display: grid; place-items: center; padding: 8px; }
+  .phone-glow::before {
+    content: ""; position: absolute; inset: -6% -10%;
+    background:
+      radial-gradient(40% 40% at 25% 20%, #3A86FF55, transparent 70%),
+      radial-gradient(45% 45% at 80% 30%, #FF3B6B45, transparent 70%),
+      radial-gradient(50% 50% at 60% 90%, #06D6A044, transparent 70%);
+    filter: blur(30px); z-index: 0; opacity: .9;
+  }
+  .phone {
+    position: relative; z-index: 1;
+    width: min(340px, 82vw); aspect-ratio: 340 / 710;
+    background: linear-gradient(#0a0a12, #05050b);
+    border-radius: 46px; padding: 13px;
+    box-shadow: 0 0 0 2px #2a2a38, 0 30px 60px rgba(0,0,0,.45), inset 0 0 0 6px #000;
+  }
+  .screen {
+    position: absolute; inset: 13px; border-radius: 34px; overflow: hidden;
+    background: var(--canvas); touch-action: none; user-select: none;
+  }
+  .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 42%; height: 22px; background: #05050b;
+    border-radius: 0 0 16px 16px; z-index: 40; pointer-events: none;
+  }
+
+  /* ---------- App inside the screen ---------- */
+  .app { position: absolute; inset: 0; }
+  .fxlayer { position: absolute; inset: 0; overflow: hidden; }
+  .fx { position: absolute; will-change: transform, opacity; opacity: 0; pointer-events: none; }
+
+  .switcher {
+    position: absolute; top: 30px; left: 0; right: 0; z-index: 20;
+    display: flex; gap: 8px; justify-content: center;
+  }
+  .chip {
+    width: 46px; height: 46px; border-radius: 999px; border: 2px solid;
+    background: #26263340; color: #fff; font-size: 22px; cursor: pointer;
+    display: grid; place-items: center; transition: transform .12s, background .12s;
+  }
+  .chip:active { transform: scale(.92); }
+
+  .padgrid { position: absolute; inset: 0; display: none; }
+  .padgrid.on { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+  .pad { margin: 6px; border-radius: 20px; opacity: .5; transform: scale(.94); }
+
+  .hud {
+    position: absolute; left: 0; right: 0; bottom: 16px; z-index: 20;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
+  }
+  .badge { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #fff; }
+  .badge.locked { background: #12303a; }
+  .badge.unlocked { background: #4a1414; }
+  .hint { color: #8b8ba3; font-size: 11px; }
+  .holdbtn {
+    pointer-events: auto; margin-top: 2px; position: relative; overflow: hidden;
+    border: 1px solid #33334a; background: #1a1a26; color: #c9c9dc;
+    font-size: 11px; font-weight: 600; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  }
+  .holdbtn .fill {
+    position: absolute; inset: 0; background: var(--accent); opacity: .28;
+    transform: scaleX(0); transform-origin: left; z-index: 0;
+  }
+  .holdbtn span { position: relative; z-index: 1; }
+
+  /* ---------- Gate ---------- */
+  .overlay { position: absolute; inset: 0; z-index: 50; background: var(--scrim); display: none; }
+  .overlay.on { display: block; }
+  .corner {
+    position: absolute; width: 84px; height: 84px; display: grid; place-items: center; cursor: pointer;
+  }
+  .corner .box {
+    width: 62px; height: 62px; border-radius: 16px; border: 3px dashed #ffffff40;
+  }
+  .corner.done .box { background: #2EC4B6; border-color: #2EC4B6; border-style: solid; }
+  .corner.tl { top: 26px; left: 26px; } .corner.tr { top: 26px; right: 26px; }
+  .corner.br { bottom: 26px; right: 26px; } .corner.bl { bottom: 26px; left: 26px; }
+  .gate-copy { position: absolute; top: 38%; left: 20px; right: 20px; text-align: center; color: #fff; }
+  .gate-copy h3 { margin: 0 0 6px; font-size: 21px; font-weight: 800; }
+  .gate-copy p { margin: 0 0 14px; color: #b7b7cc; font-size: 13px; }
+  .dots { display: flex; gap: 8px; justify-content: center; }
+  .dot { width: 12px; height: 12px; border-radius: 999px; border: 2px solid #8b8ba3; }
+  .dot.on { background: #2EC4B6; border-color: #2EC4B6; }
+
+  .pinpad { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 20px; }
+  .pinpad.on { display: flex; }
+  .pinpad h3 { margin: 0; color: #fff; font-size: 20px; font-weight: 800; }
+  .pips { display: flex; gap: 14px; }
+  .pip { width: 16px; height: 16px; border-radius: 999px; border: 2px solid #8b8ba3; }
+  .pip.fill { background: #fff; }
+  .pinerr { color: #FF6B6B; }
+  .keys { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; width: 100%; max-width: 260px; }
+  .key {
+    aspect-ratio: 1; border-radius: 14px; border: none; background: #26263380; color: #fff;
+    font-size: 20px; font-weight: 700; cursor: pointer; font-variant-numeric: tabular-nums;
+  }
+  .key:active { background: #2EC4B6; }
+  .keys.shake { animation: shake .35s; }
+  @keyframes shake { 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+
+  .released { position: absolute; inset: 0; z-index: 60; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--canvas-alt); text-align: center; padding: 24px; }
+  .released.on { display: flex; }
+  .released .big { font-size: 54px; }
+  .released h3 { margin: 0; color: #fff; font-size: 22px; font-weight: 800; }
+  .released p { margin: 0; color: #9c9cb2; font-size: 13px; max-width: 34ch; }
+  .resume { margin-top: 6px; background: #2EC4B6; color: #04201C; border: none; font-weight: 800; font-size: 15px; padding: 11px 22px; border-radius: 999px; cursor: pointer; }
+
+  .devnote { color: var(--muted); font-size: 12px; text-align: center; max-width: 32ch; }
+
+  /* ---------- Guide ---------- */
+  .guide { display: flex; flex-direction: column; gap: 20px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: clamp(18px, 3vw, 26px); }
+  .card h2 { margin: 0 0 4px; font-size: 18px; letter-spacing: -.01em; }
+  .card .sub { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+  ol.steps { list-style: none; counter-reset: s; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; }
+  ol.steps li::before {
+    content: counter(s); background: var(--accent); color: var(--accent-ink);
+    width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center;
+    font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums;
+  }
+  ol.steps b { font-weight: 700; }
+  ol.steps p { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; }
+  .pillars { display: grid; gap: 12px; }
+  .pillar { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+  .pillar .ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font-size: 17px; background: var(--panel-2); border: 1px solid var(--line); }
+  .pillar b { font-size: 14px; }
+  .pillar p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--panel-2); border: 1px solid var(--line); padding: 1px 6px; border-radius: 6px; }
+  .foot { margin-top: 8px; color: var(--muted); font-size: 12.5px; }
+  .foot a { color: var(--accent); }
+
+  button:focus-visible, .chip:focus-visible, .corner:focus-visible, .key:focus-visible {
+    outline: 3px solid var(--accent); outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">Interactive demo · runs in your browser</p>
+    <h1>Baby Mode — a device that a toddler can’t escape</h1>
+    <p class="lede">A faithful simulation of the real React&nbsp;Native app: a locked-down, high-contrast play canvas with pluggable activities, and a grown-ups-only exit gate. Tap, mash, and try to get out.</p>
+  </header>
+
+  <div class="grid">
+    <!-- DEVICE -->
+    <div class="stage">
+      <div class="phone-glow">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen" id="screen">
+            <div class="app">
+              <div class="fxlayer" id="fxlayer"></div>
+              <div class="padgrid" id="padgrid"></div>
+
+              <div class="switcher" id="switcher"></div>
+
+              <div class="hud">
+                <div class="badge locked" id="badge">🔒 Locked</div>
+                <div class="hint">Grown-ups: hold two fingers to exit</div>
+                <button class="holdbtn" id="holdbtn" aria-label="Hold to open the grown-up exit gate">
+                  <span class="fill" id="holdfill"></span><span>◉ hold to exit</span>
+                </button>
+              </div>
+
+              <!-- Gate: corners -->
+              <div class="overlay" id="cornersOverlay">
+                <div class="gate-copy">
+                  <h3>Grown-ups only</h3>
+                  <p>Tap the four corners, clockwise from the top-left.</p>
+                  <div class="dots" id="dots"></div>
+                </div>
+                <div class="corner tl" data-c="0" tabindex="0" role="button" aria-label="Corner 1"><div class="box"></div></div>
+                <div class="corner tr" data-c="1" tabindex="0" role="button" aria-label="Corner 2"><div class="box"></div></div>
+                <div class="corner br" data-c="2" tabindex="0" role="button" aria-label="Corner 3"><div class="box"></div></div>
+                <div class="corner bl" data-c="3" tabindex="0" role="button" aria-label="Corner 4"><div class="box"></div></div>
+              </div>
+
+              <!-- Gate: PIN -->
+              <div class="pinpad" id="pinpad">
+                <h3>Enter PIN to exit</h3>
+                <div class="pips" id="pips"></div>
+                <div class="hint pinerr" id="pinerr">&nbsp;</div>
+                <div class="keys" id="keys"></div>
+                <div class="hint">Demo PIN is <b>2&nbsp;4&nbsp;6&nbsp;8</b> · keys reshuffle each time</div>
+              </div>
+
+              <!-- Released -->
+              <div class="released" id="released">
+                <div class="big">🔓</div>
+                <h3>Lockdown released</h3>
+                <p>The device is unlocked. A grown-up could now leave the app — or resume Baby&nbsp;Mode.</p>
+                <button class="resume" id="resume">Resume play</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="devnote">Multi-touch works: on a touchscreen, mash with several fingers at once.</p>
+    </div>
+
+    <!-- GUIDE -->
+    <div class="guide">
+      <div class="card">
+        <h2>Try it, step by step</h2>
+        <p class="sub">Everything below happens inside the phone on the left.</p>
+        <ol class="steps">
+          <li><div><b>Tap and mash the screen.</b><p>Ripples bloom under every touch. Hammer it with many fingers — the animation pool never drops a frame.</p></div></li>
+          <li><div><b>Switch activities</b> with the chips up top.<p>💧 Ripples, 🎈 Pop (bursting shapes + haptics on a real device), 🎹 Sounds (a tap-anywhere pad that actually plays tones here).</p></div></li>
+          <li><div><b>Try to leave — you can’t.</b><p>There’s no back button, no home. On a real device the OS is pinned away entirely.</p></div></li>
+          <li><div><b>Open the grown-up gate.</b><p>Press and <b>hold “◉ hold to exit”</b> for ~1.5s (this stands in for the two-finger long-press). Toddlers don’t hold deliberately.</p></div></li>
+          <li><div><b>Tap the four corners</b> clockwise from the top-left.<p>Wrong order or dawdling resets it — random mashing can’t solve an ordered, timed sequence.</p></div></li>
+          <li><div><b>Enter the PIN 2-4-6-8.</b><p>The pad reshuffles every open and after any mistake, so it can’t be learned as a finger-path.</p></div></li>
+          <li><div><b>You’re out.</b> Tap <b>Resume play</b> to re-lock.<p>&nbsp;</p></div></li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>What you’re seeing</h2>
+        <p class="sub">The four requirements, each demonstrated above.</p>
+        <div class="pillars">
+          <div class="pillar"><div class="ic">🔒</div><div><b>Device lockdown</b><p>Native screen-pinning (Android) / Guided Access (iOS); notifications, gestures, and hardware buttons suppressed.</p></div></div>
+          <div class="pillar"><div class="ic">🚪</div><div><b>Parental gate exit</b><p>Multi-finger long-press → clockwise corners → randomized PIN. The only way out.</p></div></div>
+          <div class="pillar"><div class="ic">🌊</div><div><b>Resilient canvas</b><p>A fixed animated pool absorbs aggressive multi-touch with zero re-renders or GC churn.</p></div></div>
+          <div class="pillar"><div class="ic">🧩</div><div><b>Modular activities</b><p>Ripples, Pop, Sounds are pluggable modules from a registry — add one file to ship another.</p></div></div>
+        </div>
+        <p class="foot">This is an HTML re-creation for the browser. The shipping app is React&nbsp;Native + TypeScript — see <code>README.md</code> and <code>docs/ARCHITECTURE.md</code>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var PALETTE = ["#FF3B6B","#FF9F1C","#FFD400","#2EC4B6","#3A86FF","#8338EC","#06D6A0","#FF5DA2"];
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var screen = document.getElementById("screen");
+  var fxlayer = document.getElementById("fxlayer");
+  var padgrid = document.getElementById("padgrid");
+  var badge = document.getElementById("badge");
+
+  var seed = 0;
+  var mode = "ripples";
+
+  /* ---- Activity switcher ---- */
+  var ACTS = [
+    { id: "ripples", glyph: "💧", accent: "#3A86FF" },
+    { id: "pop",     glyph: "🎈", accent: "#FF3B6B" },
+    { id: "sounds",  glyph: "🎹", accent: "#06D6A0" }
+  ];
+  var switcher = document.getElementById("switcher");
+  ACTS.forEach(function (a) {
+    var b = document.createElement("button");
+    b.className = "chip"; b.textContent = a.glyph; b.style.borderColor = a.accent;
+    b.setAttribute("aria-label", a.id);
+    b.addEventListener("click", function () { setMode(a.id, b, a.accent); });
+    b._act = a; switcher.appendChild(b);
+  });
+  function setMode(id, btn, accent) {
+    mode = id;
+    Array.prototype.forEach.call(switcher.children, function (c) {
+      c.style.background = "#26263340";
+    });
+    if (btn) btn.style.background = accent;
+    padgrid.classList.toggle("on", id === "sounds");
+  }
+  setMode("ripples", switcher.children[0], ACTS[0].accent);
+
+  /* ---- Soundboard pads ---- */
+  var pads = [];
+  for (var i = 0; i < 9; i++) {
+    var p = document.createElement("div");
+    p.className = "pad"; p.style.background = PALETTE[i % PALETTE.length];
+    padgrid.appendChild(p); pads.push(p);
+  }
+  var audioCtx = null;
+  var SCALE = [261.63,293.66,329.63,392.0,440.0,523.25,587.33,659.25,784.0];
+  function playTone(idx) {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var t = audioCtx.currentTime;
+      var osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+      osc.type = "triangle"; osc.frequency.value = SCALE[idx % SCALE.length];
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.22, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+      osc.connect(g); g.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.42);
+    } catch (e) { /* audio optional */ }
+  }
+  function flashPad(idx) {
+    var pad = pads[idx]; if (!pad) return;
+    pad.animate(
+      [{ opacity: 1, transform: "scale(1)" }, { opacity: .5, transform: "scale(.94)" }],
+      { duration: 320, easing: "ease-out" }
+    );
+  }
+
+  /* ---- Animated pool (mirrors useAnimatedPool) ---- */
+  var POOL = 40, pool = [], cursor = 0;
+  for (var k = 0; k < POOL; k++) {
+    var el = document.createElement("div");
+    el.className = "fx"; fxlayer.appendChild(el); pool.push(el);
+  }
+  function spawn(x, y, s) {
+    var el = pool[cursor % POOL]; cursor++;
+    var color = PALETTE[Math.abs(s) % PALETTE.length];
+    if (el._anim) el._anim.cancel();
+
+    if (mode === "pop") {
+      var shape = Math.abs(s) % 3; // 0 circle 1 square 2 diamond
+      var size = 96;
+      el.style.width = el.style.height = size + "px";
+      el.style.borderRadius = shape === 0 ? "50%" : shape === 1 ? "18px" : "10px";
+      el.style.background = color;
+      var base = "translate(" + (x - size/2) + "px," + (y - size/2) + "px)";
+      var rot = shape === 2 ? " rotate(45deg)" : "";
+      el._anim = el.animate([
+        { transform: base + " scale(0)" + rot, opacity: 1, offset: 0 },
+        { transform: base + " scale(1.15)" + rot, opacity: 1, offset: 0.6 },
+        { transform: base + " scale(2)" + rot, opacity: 0, offset: 1 }
+      ], { duration: reduce ? 1 : 640, easing: "ease-out", fill: "forwards" });
+    } else {
+      // ripples (also used as ambient feedback in sounds mode)
+      var d = 120;
+      el.style.width = el.style.height = d + "px";
+      el.style.borderRadius = "50%";
+      el.style.background = color;
+      var b2 = "translate(" + (x - d/2) + "px," + (y - d/2) + "px)";
+      el._anim = el.animate([
+        { transform: b2 + " scale(.25)", opacity: .9 },
+        { transform: b2 + " scale(2.6)", opacity: 0 }
+      ], { duration: reduce ? 1 : 850, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });
+    }
+  }
+
+  /* ---- Touch surface (mirrors the Gesture.Manual observer) ---- */
+  function localXY(clientX, clientY) {
+    var r = screen.getBoundingClientRect();
+    return { x: clientX - r.left, y: clientY - r.top, r: r };
+  }
+  function onDown(clientX, clientY) {
+    var pt = localXY(clientX, clientY);
+    if (mode === "sounds") {
+      var col = Math.min(2, Math.max(0, Math.floor(pt.x / (pt.r.width / 3))));
+      var row = Math.min(2, Math.max(0, Math.floor(pt.y / (pt.r.height / 3))));
+      var idx = row * 3 + col;
+      flashPad(idx); playTone(idx);
+    }
+    spawn(pt.x, pt.y, seed++);
+  }
+  screen.addEventListener("pointerdown", function (e) {
+    // Ignore taps on interactive chrome / gate.
+    if (e.target.closest(".switcher,.hud,.overlay.on,.pinpad.on,.released.on")) return;
+    onDown(e.clientX, e.clientY);
+  });
+
+  /* ---- Grown-up trigger: press & hold ---- */
+  var holdbtn = document.getElementById("holdbtn");
+  var holdfill = document.getElementById("holdfill");
+  var holdTimer = null, holdAnim = null;
+  function startHold() {
+    if (holdTimer) return;
+    holdAnim = holdfill.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+      { duration: 1500, fill: "forwards" });
+    holdTimer = setTimeout(function () { endHold(); openGate(); }, 1500);
+  }
+  function endHold() {
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    if (holdAnim) { holdAnim.cancel(); holdAnim = null; }
+  }
+  holdbtn.addEventListener("pointerdown", function (e) { e.preventDefault(); startHold(); });
+  holdbtn.addEventListener("pointerup", endHold);
+  holdbtn.addEventListener("pointerleave", endHold);
+  window.addEventListener("keydown", function (e) { if ((e.key === "g" || e.key === "G")) openGate(); });
+
+  /* ---- Corners gate ---- */
+  var ORDER = [0,1,2,3]; // tl, tr, br, bl
+  var progress = 0, cornerTimer = null;
+  var cornersOverlay = document.getElementById("cornersOverlay");
+  var corners = Array.prototype.slice.call(cornersOverlay.querySelectorAll(".corner"));
+  var dots = document.getElementById("dots");
+  ORDER.forEach(function () { var d = document.createElement("div"); d.className = "dot"; dots.appendChild(d); });
+
+  function openGate() {
+    resetCorners();
+    document.getElementById("released").classList.remove("on");
+    document.getElementById("pinpad").classList.remove("on");
+    cornersOverlay.classList.add("on");
+  }
+  function resetCorners() {
+    progress = 0;
+    corners.forEach(function (c) { c.classList.remove("done"); });
+    Array.prototype.forEach.call(dots.children, function (d) { d.classList.remove("on"); });
+    if (cornerTimer) { clearTimeout(cornerTimer); cornerTimer = null; }
+  }
+  function pressCorner(idx) {
+    if (idx === ORDER[progress]) {
+      if (cornerTimer) clearTimeout(cornerTimer);
+      corners[idx].classList.add("done");
+      dots.children[progress].classList.add("on");
+      progress++;
+      if (progress >= ORDER.length) { toPin(); return; }
+      cornerTimer = setTimeout(resetCorners, 4000);
+    } else if (idx !== ORDER[progress - 1]) {
+      resetCorners();
+    }
+  }
+  corners.forEach(function (c) {
+    var idx = parseInt(c.getAttribute("data-c"), 10);
+    c.addEventListener("pointerdown", function (e) { e.stopPropagation(); pressCorner(idx); });
+    c.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pressCorner(idx); } });
+  });
+
+  /* ---- Randomized PIN ---- */
+  var PIN = "2468", entry = "";
+  var pinpad = document.getElementById("pinpad");
+  var pips = document.getElementById("pips");
+  var keys = document.getElementById("keys");
+  var pinerr = document.getElementById("pinerr");
+  for (var pi = 0; pi < 4; pi++) { var pp = document.createElement("div"); pp.className = "pip"; pips.appendChild(pp); }
+
+  function toPin() {
+    cornersOverlay.classList.remove("on");
+    entry = ""; pinerr.innerHTML = "&nbsp;";
+    renderPips(); shuffleKeys();
+    pinpad.classList.add("on");
+  }
+  function renderPips() {
+    Array.prototype.forEach.call(pips.children, function (p, i) {
+      p.classList.toggle("fill", i < entry.length);
+    });
+  }
+  function shuffleKeys() {
+    var digits = [0,1,2,3,4,5,6,7,8,9];
+    for (var i = digits.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = digits[i]; digits[i] = digits[j]; digits[j] = t;
+    }
+    keys.innerHTML = "";
+    digits.forEach(function (d) {
+      var b = document.createElement("button");
+      b.className = "key"; b.textContent = d; b.setAttribute("aria-label", "Digit " + d);
+      b.addEventListener("click", function () { pressKey(d); });
+      keys.appendChild(b);
+    });
+  }
+  function pressKey(d) {
+    pinerr.innerHTML = "&nbsp;";
+    entry += String(d); renderPips();
+    if (entry.length < PIN.length) return;
+    if (entry === PIN) { success(); }
+    else {
+      entry = ""; renderPips();
+      pinerr.textContent = "Wrong PIN — keys reshuffled";
+      keys.classList.remove("shake"); void keys.offsetWidth; keys.classList.add("shake");
+      shuffleKeys();
+    }
+  }
+  function success() {
+    pinpad.classList.remove("on");
+    badge.className = "badge unlocked"; badge.textContent = "🔓 Unlocked";
+    document.getElementById("released").classList.add("on");
+  }
+  document.getElementById("resume").addEventListener("click", function () {
+    document.getElementById("released").classList.remove("on");
+    badge.className = "badge locked"; badge.textContent = "🔒 Locked";
+  });
+})();
+</script>
+
+</body>
+</html>

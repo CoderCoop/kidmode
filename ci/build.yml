@@ -118,6 +118,7 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: '1'
       # Surfaced so steps can gate on "are signing secrets configured?".
       IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+      APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -195,7 +196,10 @@ jobs:
           IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
           IOS_EXPORT_METHOD: ${{ secrets.IOS_EXPORT_METHOD }}
         run: |
-          METHOD="${IOS_EXPORT_METHOD:-development}"
+          # Default to app-store so the exported .ipa is TestFlight-ready.
+          # Override with IOS_EXPORT_METHOD=ad-hoc / development for
+          # device-installable (non-store) builds.
+          METHOD="${IOS_EXPORT_METHOD:-app-store}"
           cat > ExportOptions.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -240,3 +244,22 @@ jobs:
           name: babymode-ios-ipa
           path: ${{ runner.temp }}/export/*.ipa
           if-no-files-found: error
+
+      # ---- Optional: ship the .ipa to TestFlight / App Store Connect -------
+      # Runs only when both iOS signing AND an App Store Connect API key are
+      # configured. Requires the export method to be app-store (the default).
+      - name: Upload to TestFlight
+        if: env.IOS_CERTIFICATE_BASE64 != '' && env.APPSTORE_API_KEY_ID != ''
+        env:
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          APPSTORE_API_KEY_BASE64: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APPSTORE_API_KEY_BASE64" | base64 --decode \
+            > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
+          IPA=$(find "$RUNNER_TEMP/export" -name '*.ipa' | head -1)
+          echo "Uploading $IPA to App Store Connect / TestFlight"
+          xcrun altool --upload-app --type ios --file "$IPA" \
+            --apiKey "$APPSTORE_API_KEY_ID" \
+            --apiIssuer "$APPSTORE_API_ISSUER_ID"

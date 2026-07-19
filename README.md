@@ -13,6 +13,13 @@ corner taps followed by a randomized PIN pad — is the sole way out.
 
 ---
 
+## Demo
+
+Open [`demo/index.html`](demo/index.html) in any browser for a self-contained,
+interactive re-creation — a simulated phone running the locked canvas, all three
+activities, and the full parental-gate exit. Full walkthrough in
+[`docs/DEMO.md`](docs/DEMO.md).
+
 ## Why it exists
 
 Hand a toddler a phone and within seconds they have dialled a contact, deleted an
