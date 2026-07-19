@@ -1,6 +1,7 @@
 export {ParentalGate} from './ParentalGate';
 export {useGateTrigger} from './useGateTrigger';
-export {useCornerSequence} from './useCornerSequence';
+export type {GateTrigger} from './useGateTrigger';
+export {HoldToExit} from './HoldToExit';
 export {shuffledDigits, pinMatches} from './randomizedPad';
-export {DEFAULT_GATE_CONFIG, CORNER_ORDER} from './types';
-export type {ParentalGateConfig, Corner, GateStage} from './types';
+export {DEFAULT_GATE_CONFIG} from './types';
+export type {ParentalGateConfig, GateStage} from './types';

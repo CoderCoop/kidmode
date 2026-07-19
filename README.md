@@ -3,8 +3,10 @@
 A secure, interactive full-screen **sandbox for children ages 0–5**, built with
 **React Native + TypeScript**. It locks the device into a single app (Android
 screen pinning / iOS Guided Access), hides the OS, and exposes only a resilient,
-multi-touch play canvas with pluggable activities. A parent-only gate — four
-corner taps followed by a randomized PIN pad — is the sole way out.
+multi-touch play canvas with pluggable activities. A parent-only gate — a
+two-finger press-and-hold followed by a randomized PIN pad — is the sole way out.
+
+**🌐 Website & live demo: https://codercoop.github.io/kidmode/**
 
 > **Status:** build-ready. Complete JS/TS app + full native projects
 > (`android/`, `ios/`) with the Kiosk native code packaged as a local,
@@ -13,12 +15,13 @@ corner taps followed by a randomized PIN pad — is the sole way out.
 
 ---
 
-## Demo
+## Website & live demo
 
-Open [`demo/index.html`](demo/index.html) in any browser for a self-contained,
-interactive re-creation — a simulated phone running the locked canvas, all three
-activities, and the full parental-gate exit. Full walkthrough in
-[`docs/DEMO.md`](docs/DEMO.md).
+**▶ [Try it in your browser →](https://codercoop.github.io/kidmode/)**
+
+The [Kid Mode website](https://codercoop.github.io/kidmode/) runs the real play
+activities inside a simulated phone, walks through how you start, use, and exit
+the app, and explains the technical approach. No install needed.
 
 ## Why it exists
 
@@ -32,7 +35,7 @@ yes. Playtime ends only when a grown-up deliberately chooses to leave.
 | Requirement | Where it lives | How it works |
 |---|---|---|
 | **Device lockdown (kiosk)** | `src/kiosk/`, `android/**/kiosk`, `ios/**/Kiosk` | Native bridges call Android `startLockTask` (Device Owner → no-confirmation kiosk + notification suppression) and iOS `requestGuidedAccessSession` / Guided Access. JS adds a hardware-Back trap + immersive mode as a second line of defence. |
-| **Parental gate exit** | `src/parentalGate/` | Multi-finger long-press *opens* the gate → tap 4 corners clockwise (timed, ordered) → **randomized** PIN pad. Each barrier targets a skill a toddler lacks. |
+| **Parental gate exit** | `src/parentalGate/` | A **two-finger press-and-hold** *opens* the gate (with a live "keep holding" indicator) → **randomized** PIN pad → unlock. A hold-to-exit **Forgot PIN?** fallback means a parent is never locked out. Each barrier targets a skill a 0–5-year-old lacks: sustained multi-touch, and reading digits. |
 | **Resilient interactive canvas** | `src/canvas/` | A `Gesture.Manual` touch observer feeds every pointer into a **fixed animated object pool**. Mashing = cheap shared-value writes on the UI thread, never React re-renders or GC churn. |
 | **Modular activities** | `src/activities/` | A registry of pluggable, forwardRef modules (`ripples`, `pop`, `sounds`, `comet`, `sparkle`). Add one file + one registry entry — the shell adapts automatically. |
 
@@ -47,7 +50,7 @@ App.tsx
             ├─ InteractiveCanvas .. multi-touch observer -> activity.spawn()
             │  └─ <Activity/> ..... Ripple | Pop | Soundboard | Comet | Sparkle (animated pool)
             ├─ ActivitySwitcher ... in-sandbox module picker
-            └─ ParentalGate ....... corners -> randomized PIN -> unlock()
+            └─ ParentalGate ....... two-finger hold -> randomized PIN -> unlock()
 ```
 
 Full write-up: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
@@ -94,7 +97,8 @@ supervised Single App Mode).
 
 - `src/kiosk/KioskManager.ts` — lockdown lifecycle + Back-button trap + AppState reconciliation.
 - `src/kiosk/NativeKiosk.ts` — native module resolver with a safe soft fallback.
-- `src/parentalGate/useCornerSequence.ts` — ordered/timed corner-tap logic.
+- `src/parentalGate/useGateTrigger.ts` — the two-finger press-and-hold that opens the gate, with live hold-progress feedback.
+- `src/parentalGate/PinChallenge.tsx` — the randomized PIN pad + hold-to-exit "Forgot PIN?" fallback.
 - `src/parentalGate/randomizedPad.ts` — per-open PIN shuffle.
 - `src/canvas/useAnimatedPool.ts` — the allocation-free effect pool.
 - `src/canvas/InteractiveCanvas.tsx` — the multi-touch surface.
