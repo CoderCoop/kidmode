@@ -838,11 +838,11 @@
     var ctx = this.ctx;
     for (var i = 0; i < this.pads.length; i++){
       var p = this.pads[i], c = color(p.idx);
-      var fl = Math.max(0, 1 - (now - p.flash) / 260);
+      var fl = Math.max(0, 1 - (now - p.flash) / 300);
       ctx.save();
-      ctx.globalAlpha = 0.14 + fl * 0.8;
+      ctx.globalAlpha = 0.13 + fl * 0.6;
       ctx.fillStyle = c;
-      if (fl > 0){ ctx.shadowColor = c; ctx.shadowBlur = 26 * this.k * fl; }
+      if (fl > 0){ ctx.shadowColor = c; ctx.shadowBlur = 14 * this.k * fl; }
       roundRect(ctx, p.x, p.y, p.w, p.h, 14 * this.k);
       ctx.fill();
       ctx.restore();
@@ -852,22 +852,26 @@
   Demo.prototype.drawEffect = function(e, p){
     if (p < 0) p = 0; // rAF/perf.now skew can nudge a fresh effect just below 0
     var ctx = this.ctx, k = this.k, c = color(e.seed);
+    // Ease opacity in over the first slice of life so every effect grows in
+    // gently instead of blinking on at full brightness — that instantaneous
+    // full-alpha appearance is what reads as a screen "flash" on each touch.
+    var fadeIn = p < 0.16 ? p / 0.16 : 1;
     ctx.save();
-    ctx.fillStyle = c; ctx.shadowColor = c; ctx.shadowBlur = 16 * k;
+    ctx.fillStyle = c; ctx.shadowColor = c; ctx.shadowBlur = 10 * k;
 
     if (e.type === "ripples"){
       // An expanding ring (outline), not a filled disc — a real ripple that
       // never floods the screen with colour on each touch.
-      ctx.globalAlpha = (1 - p);
+      ctx.globalAlpha = (1 - p) * fadeIn;
       var rr = 60 * k * (0.25 + p * 2.4);
       ctx.strokeStyle = c;
       ctx.lineWidth = Math.max(2, 13 * k * (1 - p * 0.7));
       ctx.beginPath(); ctx.arc(e.x, e.y, rr, 0, Math.PI * 2); ctx.stroke();
 
     } else if (e.type === "pop"){
-      var s = p < 0.6 ? (p / 0.6) * 1.15 : 1.15 + ((p - 0.6) / 0.4) * 0.9;
-      ctx.globalAlpha = p < 0.6 ? 1 : 1 - (p - 0.6) / 0.4;
-      var size = 110 * k * s, half = size / 2, shape = Math.abs(e.seed) % 3;
+      var s = p < 0.6 ? (p / 0.6) * 1.1 : 1.1 + ((p - 0.6) / 0.4) * 0.5;
+      ctx.globalAlpha = (p < 0.6 ? 0.9 : 0.9 * (1 - (p - 0.6) / 0.4)) * fadeIn;
+      var size = 96 * k * s, half = size / 2, shape = Math.abs(e.seed) % 3;
       ctx.translate(e.x, e.y);
       if (shape === 0){ ctx.beginPath(); ctx.arc(0, 0, half, 0, Math.PI * 2); ctx.fill(); }
       else if (shape === 1){ roundRect(ctx, -half, -half, size, size, 18 * k); ctx.fill(); }
@@ -877,7 +881,7 @@
       var ang = e.seed * 2.399963229728653;
       var dist = (1 - (1 - p) * (1 - p)) * 220 * k;
       var cx = e.x + Math.cos(ang) * dist, cy = e.y + Math.sin(ang) * dist;
-      var head = 42 * k * (1 - p * 0.5), base = 1 - p;
+      var head = 42 * k * (1 - p * 0.5), base = (1 - p) * fadeIn;
       for (var t = 4; t >= 1; t--){
         ctx.globalAlpha = base * (1 - t * 0.18);
         var tr = head * (1 - t * 0.16);
@@ -888,7 +892,7 @@
 
     } else if (e.type === "sparkle"){
       var sc = p < 0.4 ? (p / 0.4) * 1.15 : 1.15 - ((p - 0.4) / 0.6) * 1.15;
-      ctx.globalAlpha = 1 - p * p;
+      ctx.globalAlpha = (1 - p * p) * fadeIn;
       var len = 132 * k * Math.max(0, sc), th = 22 * k * Math.max(0, sc);
       ctx.translate(e.x, e.y); ctx.rotate(p * Math.PI / 2);
       roundRect(ctx, -len / 2, -th / 2, len, th, th / 2); ctx.fill();
