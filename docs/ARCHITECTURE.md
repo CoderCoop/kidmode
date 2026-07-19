@@ -1,6 +1,6 @@
 # Architecture
 
-Baby Mode is organised around four decoupled subsystems, each in its own folder
+Kid Mode is organised around four decoupled subsystems, each in its own folder
 under `src/`. They communicate through narrow, typed contracts so any one can be
 replaced without touching the others.
 
@@ -37,7 +37,7 @@ import. `hasNativeKiosk` tells the UI whether lockdown is real or best-effort.
 | Android | Device Owner + `setLockTaskFeatures` (no confirmation, notifications off) | `startLockTask` screen pinning (+ JS Back-trap & immersive) |
 | iOS | Autonomous Single App Mode (supervised devices) | user-enabled Guided Access, which the app detects & uses |
 
-The native modules also emit `BabyModeKioskChanged` so system-initiated changes
+The native modules also emit `KidModeKioskChanged` so system-initiated changes
 propagate back into JS.
 
 ## 2. Parental gate (`src/parentalGate`)
@@ -86,6 +86,10 @@ Shipped modules:
 - **Pop** — inflating shapes that burst, with throttled haptics.
 - **Soundboard** — a pad grid; taps are mapped by coordinate (robust to mashing),
   flashing a pad and calling the pluggable `SoundEngine` seam (`playPad`).
+- **Comets** — glowing heads flung along a seed-derived heading that drift and
+  fade; the first module whose motion is entirely worklet-driven from `progress`.
+- **Sparkles** — spinning four-point twinkles (two crossed bars) with a light,
+  throttled haptic tick.
 
 Audio is intentionally a seam (`setSoundEngine`) so the core stays asset-free;
 haptics ship out of the box via the built-in `Vibration` API.

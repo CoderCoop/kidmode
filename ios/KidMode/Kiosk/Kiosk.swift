@@ -21,7 +21,7 @@ import UIKit
  *     detects that state and reports it so the JS layer knows the lockdown is
  *     genuinely in force.
  *
- * Either way we emit `BabyModeKioskChanged` when the OS toggles Guided Access,
+ * Either way we emit `KidModeKioskChanged` when the OS toggles Guided Access,
  * so JS stays in sync if the parent leaves via triple-click.
  */
 @objc(Kiosk)
@@ -45,7 +45,7 @@ class Kiosk: RCTEventEmitter {
 
   override static func requiresMainQueueSetup() -> Bool { false }
 
-  override func supportedEvents() -> [String]! { ["BabyModeKioskChanged"] }
+  override func supportedEvents() -> [String]! { ["KidModeKioskChanged"] }
 
   override func startObserving() { hasListeners = true }
   override func stopObserving() { hasListeners = false }
@@ -54,7 +54,7 @@ class Kiosk: RCTEventEmitter {
     guard hasListeners else { return }
     let active = UIAccessibility.isGuidedAccessEnabled
     sendEvent(
-      withName: "BabyModeKioskChanged",
+      withName: "KidModeKioskChanged",
       body: ["active": active, "reason": "system"]
     )
   }
@@ -77,7 +77,7 @@ class Kiosk: RCTEventEmitter {
           resolve(self.status(active: true, mode: "single-app"))
           if self.hasListeners {
             self.sendEvent(
-              withName: "BabyModeKioskChanged",
+              withName: "KidModeKioskChanged",
               body: ["active": true, "reason": "entered"]
             )
           }
@@ -100,7 +100,7 @@ class Kiosk: RCTEventEmitter {
         resolve(self.status(active: false, mode: "single-app"))
         if self.hasListeners {
           self.sendEvent(
-            withName: "BabyModeKioskChanged",
+            withName: "KidModeKioskChanged",
             body: ["active": false, "reason": "exited"]
           )
         }

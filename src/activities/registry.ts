@@ -2,6 +2,8 @@ import type {ActivityDefinition} from './types';
 import {RippleActivity} from './ripples/RippleActivity';
 import {PopActivity} from './popping/PopActivity';
 import {SoundboardActivity} from './soundboard/SoundboardActivity';
+import {CometActivity} from './comet/CometActivity';
+import {SparkleActivity} from './sparkle/SparkleActivity';
 import {palette} from '../theme/theme';
 
 /**
@@ -31,6 +33,20 @@ export const ACTIVITIES: readonly ActivityDefinition[] = [
     glyph: '🎹',
     accent: palette.playful[6],
     Component: SoundboardActivity,
+  },
+  {
+    id: 'comet',
+    title: 'Comets',
+    glyph: '☄️',
+    accent: palette.playful[3],
+    Component: CometActivity,
+  },
+  {
+    id: 'sparkle',
+    title: 'Sparkles',
+    glyph: '✨',
+    accent: palette.playful[2],
+    Component: SparkleActivity,
   },
 ];
 

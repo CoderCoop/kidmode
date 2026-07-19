@@ -1,4 +1,4 @@
-package com.babymode.kiosk
+package com.kidmode.kiosk
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

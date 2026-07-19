@@ -64,4 +64,4 @@ export interface KioskNativeModule {
   removeListeners(count: number): void;
 }
 
-export const KIOSK_EVENT = 'BabyModeKioskChanged';
+export const KIOSK_EVENT = 'KidModeKioskChanged';

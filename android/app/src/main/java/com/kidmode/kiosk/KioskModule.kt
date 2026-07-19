@@ -1,4 +1,4 @@
-package com.babymode.kiosk
+package com.kidmode.kiosk
 
 import android.app.Activity
 import android.app.ActivityManager
@@ -196,6 +196,6 @@ class KioskModule(private val reactContext: ReactApplicationContext) :
 
   companion object {
     const val NAME = "Kiosk"
-    const val EVENT_NAME = "BabyModeKioskChanged"
+    const val EVENT_NAME = "KidModeKioskChanged"
   }
 }

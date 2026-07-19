@@ -8,8 +8,8 @@ guide wires the modules into a fresh scaffold.
 ## 0. Scaffold once
 
 ```bash
-# From a temp dir, generate a shell with the SAME name ("babymode")
-npx @react-native-community/cli@latest init babymode --version 0.76.5
+# From a temp dir, generate a shell with the SAME name ("kidmode")
+npx @react-native-community/cli@latest init kidmode --version 0.76.5
 ```
 
 Copy the generated `android/` and `ios/` folders into this repo (they are
@@ -35,8 +35,8 @@ The three gesture/animation libs need their standard one-time wiring:
 ### 1. Add the Kiosk module to the build
 
 The Kotlin sources live at
-`android/app/src/main/java/com/babymode/kiosk/`. They use package
-`com.babymode`, matching an app scaffolded with that id. If your applicationId
+`android/app/src/main/java/com/kidmode/kiosk/`. They use package
+`com.kidmode`, matching an app scaffolded with that id. If your applicationId
 differs, move the files and update the `package` line accordingly.
 
 ### 2. Register the package
@@ -44,7 +44,7 @@ differs, move the files and update the `package` line accordingly.
 In `MainApplication.kt`, add the package to `getPackages()`:
 
 ```kotlin
-import com.babymode.kiosk.KioskPackage
+import com.kidmode.kiosk.KioskPackage
 
 override fun getPackages(): List<ReactPackage> =
   PackageList(this).packages.apply {
@@ -59,7 +59,7 @@ In `android/app/src/main/AndroidManifest.xml`, declare the device-admin receiver
 
 ```xml
 <receiver
-    android:name="com.babymode.kiosk.KioskDeviceAdminReceiver"
+    android:name="com.kidmode.kiosk.KioskDeviceAdminReceiver"
     android:permission="android.permission.BIND_DEVICE_ADMIN"
     android:exported="true">
   <meta-data
@@ -78,7 +78,7 @@ In `android/app/src/main/AndroidManifest.xml`, declare the device-admin receiver
 On a **factory-reset device with no accounts**:
 
 ```bash
-adb shell dpm set-device-owner com.babymode/.kiosk.KioskDeviceAdminReceiver
+adb shell dpm set-device-owner com.kidmode/.kiosk.KioskDeviceAdminReceiver
 ```
 
 Without this, the app uses ordinary screen pinning (a one-time confirmation, and
@@ -101,7 +101,7 @@ so relaunches return to the pinned task instead of stacking.
 
 ### 1. Add the module to the target
 
-Add `ios/BabyMode/Kiosk/Kiosk.swift` and `Kiosk.m` to the app target in Xcode
+Add `ios/KidMode/Kiosk/Kiosk.swift` and `Kiosk.m` to the app target in Xcode
 (or they compile automatically if placed inside the target's source group). When
 Xcode offers to create a **bridging header**, accept — `Kiosk.m` needs to see the
 React headers, and the Swift class is exported via `RCT_EXTERN_MODULE`.
