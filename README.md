@@ -34,7 +34,7 @@ grown-up a reliable, deliberate way back out.
 | **Device lockdown (kiosk)** | `src/kiosk/`, `android/**/kiosk`, `ios/**/Kiosk` | Native bridges call Android `startLockTask` (Device Owner → no-confirmation kiosk + notification suppression) and iOS `requestGuidedAccessSession` / Guided Access. JS adds a hardware-Back trap + immersive mode as a second line of defence. |
 | **Parental gate exit** | `src/parentalGate/` | Multi-finger long-press *opens* the gate → tap 4 corners clockwise (timed, ordered) → **randomized** PIN pad. Each barrier targets a skill a toddler lacks. |
 | **Resilient interactive canvas** | `src/canvas/` | A `Gesture.Manual` touch observer feeds every pointer into a **fixed animated object pool**. Mashing = cheap shared-value writes on the UI thread, never React re-renders or GC churn. |
-| **Modular activities** | `src/activities/` | A registry of pluggable, forwardRef modules (`ripples`, `pop`, `sounds`). Add one file + one registry entry — the shell adapts automatically. |
+| **Modular activities** | `src/activities/` | A registry of pluggable, forwardRef modules (`ripples`, `pop`, `sounds`, `comet`, `sparkle`). Add one file + one registry entry — the shell adapts automatically. |
 
 ## Architecture at a glance
 
@@ -45,7 +45,7 @@ App.tsx
       └─ KioskProvider ............ enters lockdown on mount, owns lock state
          └─ Sandbox ............... the shell
             ├─ InteractiveCanvas .. multi-touch observer -> activity.spawn()
-            │  └─ <Activity/> ..... Ripple | Pop | Soundboard (animated pool)
+            │  └─ <Activity/> ..... Ripple | Pop | Soundboard | Comet | Sparkle (animated pool)
             ├─ ActivitySwitcher ... in-sandbox module picker
             └─ ParentalGate ....... corners -> randomized PIN -> unlock()
 ```

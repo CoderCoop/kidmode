@@ -86,6 +86,10 @@ Shipped modules:
 - **Pop** — inflating shapes that burst, with throttled haptics.
 - **Soundboard** — a pad grid; taps are mapped by coordinate (robust to mashing),
   flashing a pad and calling the pluggable `SoundEngine` seam (`playPad`).
+- **Comets** — glowing heads flung along a seed-derived heading that drift and
+  fade; the first module whose motion is entirely worklet-driven from `progress`.
+- **Sparkles** — spinning four-point twinkles (two crossed bars) with a light,
+  throttled haptic tick.
 
 Audio is intentionally a seam (`setSoundEngine`) so the core stays asset-free;
 haptics ship out of the box via the built-in `Vibration` API.
