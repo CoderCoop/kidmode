@@ -13,10 +13,6 @@ name: Build packaged apps
 #
 # See docs/RELEASE_SIGNING.md for the exact secret names/values. A fast `checks`
 # gate (typecheck + lint + unit tests) runs first; the native builds follow.
-#
-# NOTE: this file lives at ci/build.yml because the automation that created it
-# lacked GitHub "workflow" scope. Move it to .github/workflows/build.yml to
-# activate it (GitHub only runs workflows from that directory).
 
 on:
   push:

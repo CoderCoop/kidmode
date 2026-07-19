@@ -22,10 +22,10 @@ activities, and the full parental-gate exit. Full walkthrough in
 
 ## Why it exists
 
-Hand a toddler a phone and within seconds they have dialled a contact, deleted an
-app, or bought something. Kid Mode turns the device into a dumb, delightful
-light-and-sound toy that a child physically **cannot** escape, while giving the
-grown-up a reliable, deliberate way back out.
+Kids love phones — but hand one over and a stray tap can send an email, delete an
+app, or buy something. Kid Mode turns the phone into a delightful light-and-sound
+toy where **nothing they do can change or break anything**, so you can happily say
+yes. Playtime ends only when a grown-up deliberately chooses to leave.
 
 ## The four pillars
 
@@ -81,14 +81,9 @@ artifacts on every push/PR:
 | `kidmode-ios-ipa` | macOS | signed device **`.ipa`** (only when iOS signing secrets are set) |
 
 Add signing secrets to emit fully signed builds — see
-[`docs/RELEASE_SIGNING.md`](docs/RELEASE_SIGNING.md).
-
-> **Activate CI:** the pipeline definition is committed at [`ci/build.yml`](ci/build.yml)
-> rather than `.github/workflows/` because the automation that authored it lacked
-> GitHub *workflow* scope. Move it once to activate:
-> `git mv ci/build.yml .github/workflows/build.yml && git commit && git push`
-> (from an environment whose credentials include workflow scope, or via the
-> GitHub web editor).
+[`docs/RELEASE_SIGNING.md`](docs/RELEASE_SIGNING.md). The pipeline lives at
+[`.github/workflows/build.yml`](.github/workflows/build.yml) and runs
+automatically on every push and pull request.
 
 Build locally: `cd android && ./gradlew assembleRelease`. See
 [`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md) for tooling, the module layout,
