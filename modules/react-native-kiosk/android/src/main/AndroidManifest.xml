@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The device-admin receiver is declared here (not in the app) so it is merged
+  into the final app manifest automatically by autolinking + manifest merging.
+  It is only *used* when the app is provisioned as Device Owner; without that it
+  lies dormant and the module falls back to standard screen pinning.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <application>
+    <receiver
+        android:name="com.kidmode.kiosk.KioskDeviceAdminReceiver"
+        android:description="@string/kiosk_admin_description"
+        android:permission="android.permission.BIND_DEVICE_ADMIN"
+        android:exported="true">
+      <meta-data
+          android:name="android.app.device_admin"
+          android:resource="@xml/device_admin" />
+      <intent-filter>
+        <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+      </intent-filter>
+    </receiver>
+  </application>
+</manifest>
