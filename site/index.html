@@ -274,6 +274,44 @@
   .foot a:hover { color: var(--ink); }
   .foot-links { display: flex; gap: 22px; flex-wrap: wrap; }
 
+  /* live-demo affordances */
+  .device-col { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .live-badge {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 6;
+    display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+    padding: 6px 12px; border-radius: 999px; font-family: var(--font-display);
+    font-size: 11.5px; font-weight: 800; letter-spacing: 0.03em;
+    background: rgba(255,59,107,0.16); border: 1px solid var(--rose); color: #fff;
+    backdrop-filter: blur(6px);
+  }
+  .live-badge .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rose); box-shadow: 0 0 10px var(--rose); animation: livepulse 1.6s ease-in-out infinite; }
+  @keyframes livepulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  @media (prefers-reduced-motion: reduce) { .live-badge .live-dot { animation: none; } }
+  .device-caption { color: var(--muted); font-size: 14.5px; text-align: center; max-width: 30ch; margin: 0; }
+  .device-caption b { color: var(--ink); }
+
+  /* two-finger exit hint in the gate mockup */
+  .exit-hint {
+    display: inline-flex; align-items: center; gap: 8px; margin-bottom: 4px;
+    padding: 6px 12px; border-radius: 999px; font-family: var(--font-display);
+    font-size: 12px; font-weight: 800; color: var(--teal);
+    background: rgba(46,196,182,0.12); border: 1px solid rgba(46,196,182,0.4);
+  }
+  .forgot-link { margin-top: 12px; font-size: 12.5px; color: var(--muted); text-decoration: underline; }
+
+  /* under-the-hood technical section */
+  .tech { border-top: 1px solid var(--line); background: rgba(8,8,13,0.6); }
+  .tech-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 40px; }
+  @media (max-width: 760px) { .tech-grid { grid-template-columns: 1fr; } }
+  .tech-card { padding: 26px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); }
+  .tech-card h3 { font-size: 18px; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .tech-card p { color: var(--muted); font-size: 15px; margin: 0 0 12px; }
+  .tech-card p:last-child { margin-bottom: 0; }
+  .tech-card code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; color: var(--teal); background: rgba(46,196,182,0.1); padding: 1px 6px; border-radius: 6px; }
+  .tech-note { margin-top: 26px; color: var(--muted-dim); font-size: 14px; text-align: center; }
+  .tech-note a { color: var(--muted); }
+  .tech-note a:hover { color: var(--ink); }
+
   /* reveal */
   .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
   .reveal.in { opacity: 1; transform: none; }
@@ -288,9 +326,9 @@
   <div class="wrap nav">
     <a class="wordmark" href="#top"><span class="logo-mark" aria-hidden="true"></span>Kid&nbsp;Mode</a>
     <nav class="nav-links">
-      <a href="#demo">Demo</a>
-      <a href="#pillars">How it works</a>
-      <a href="#story">The story</a>
+      <a href="#demo">Live demo</a>
+      <a href="#story">How you use it</a>
+      <a href="#tech">Under the hood</a>
       <a class="ghost" href="https://github.com/CoderCoop/kidmode" target="_blank" rel="noopener">GitHub ↗</a>
     </nav>
   </div>
@@ -306,8 +344,8 @@
         <h1>Let them play with your phone. <span class="glow">Without the worry.</span></h1>
         <p class="lede">Kids love your phone — but one stray tap can send an email or delete an app. Kid Mode turns it into a full-screen toy of light, colour and sound, where nothing they do can change a thing. You decide when play ends.</p>
         <div class="cta-row">
-          <a class="cta cta-primary" href="#demo">Play the live demo</a>
-          <a class="cta cta-ghost" href="https://github.com/CoderCoop/kidmode" target="_blank" rel="noopener">Read the code ↗</a>
+          <a class="cta cta-primary" href="#demo">Try the live demo →</a>
+          <a class="cta cta-ghost" href="#story">See how you use it</a>
         </div>
         <div class="hero-stats">
           <div><div class="n">1</div><div class="l">full-screen play space</div></div>
@@ -316,12 +354,16 @@
         </div>
       </div>
       <div class="hero-device-wrap" id="demo">
-        <div class="device">
-          <div class="notch" aria-hidden="true"></div>
-          <div class="screen">
-            <canvas data-demo data-cycle="1" data-autoplay="1" data-interactive="1" aria-label="Live Kid Mode play canvas — tap to make ripples, sparkles and comets"></canvas>
-            <div class="screen-chips" id="hero-chips" role="group" aria-label="Choose an activity"></div>
+        <div class="device-col">
+          <div class="device">
+            <div class="notch" aria-hidden="true"></div>
+            <div class="screen">
+              <div class="live-badge"><span class="live-dot"></span>LIVE — tap to play</div>
+              <canvas data-demo data-cycle="1" data-autoplay="1" data-interactive="1" aria-label="Live Kid Mode play canvas — tap or drag inside to make ripples, sparkles and comets"></canvas>
+              <div class="screen-chips" id="hero-chips" role="group" aria-label="Choose an activity"></div>
+            </div>
           </div>
+          <p class="device-caption">This phone runs the <b>real activities</b> right here in your browser — tap or drag inside it, or pick a world below the screen.</p>
         </div>
       </div>
     </div>
@@ -358,8 +400,8 @@
         </div>
         <div class="pillar reveal" style="--accent: var(--rose)">
           <div class="p-icon">🚪</div>
-          <h3>A grown-up's way out</h3>
-          <p>Getting back to the real phone takes a deliberate, grown-up sequence: a multi-finger hold, four corner taps, then a shuffled PIN. Simple for you, out of reach for little hands.</p>
+          <h3>An easy way out — for you</h3>
+          <p>To get back to the real phone, hold two fingers on the screen for a second, then tap your PIN. Quick for a grown-up, even one-handed and distracted — but past what little hands can do. Forgot the PIN? There's a hold-to-exit fallback, so you're never locked out.</p>
         </div>
         <div class="pillar reveal" style="--accent: var(--teal)">
           <div class="p-icon">🌊</div>
@@ -369,7 +411,7 @@
         <div class="pillar reveal" style="--accent: var(--violet)">
           <div class="p-icon">🧩</div>
           <h3>Always something new</h3>
-          <p>A growing set of play worlds to choose from — ships with <code>ripples</code>, <code>pop</code>, <code>sounds</code>, <code>comet</code> and <code>sparkle</code>, and adding another is a single small file.</p>
+          <p>A growing set of play worlds to choose from — ripples, popping shapes, a sound pad, shooting comets and sparkles today, with more on the way.</p>
         </div>
       </div>
     </div>
@@ -379,63 +421,59 @@
   <section id="story">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="eyebrow">A moment it saves</span>
+        <span class="eyebrow">How you use it</span>
         <h2>You're at the table. The food hasn't come. Small hands reach for your phone.</h2>
-        <p>Here's how the next few minutes go — happily, and with nothing broken.</p>
+        <p>Start to finish, here's exactly how it goes — a few easy moves, and nothing broken. (The phones below are just illustrations; the live one to play with is up top.)</p>
       </div>
 
-      <!-- beat 1 -->
+      <!-- beat 1: start + lock -->
       <div class="story-beat reveal" style="--accent: var(--blue)">
         <div class="beat-copy">
-          <span class="step-num">STEP 01</span>
-          <h3>You hand it over — and you can relax.</h3>
-          <p>The moment Kid Mode opens, it fills the whole screen. There's no home screen to reach, no apps to open, nothing to change — just a canvas waiting to be touched.</p>
-          <div class="aside"><code>startLockTask()</code> · Guided Access · immersive mode</div>
+          <span class="step-num">STEP 01 · START</span>
+          <h3>Open the app — it locks to one screen.</h3>
+          <p>Tap Kid Mode like any other app. It fills the whole screen and stays there: the home button, notifications and app switcher stop responding, so there's nothing to accidentally leave to. No setup, no toggles — just open it and hand it over.</p>
         </div>
         <div class="beat-device">
           <div class="device sm">
             <div class="notch" aria-hidden="true"></div>
             <div class="screen">
-              <div class="status-pill"><span class="dot"></span>Safe mode · full screen</div>
-              <canvas data-demo data-activity="ripples" data-autoplay="1" data-interactive="1" aria-label="Locked-down play canvas"></canvas>
+              <div class="status-pill"><span class="dot"></span>Locked to one app</div>
+              <canvas data-demo data-activity="ripples" data-autoplay="1" aria-label="Illustration: the app locked to a single full-screen canvas"></canvas>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- beat 2 -->
+      <!-- beat 2: play -->
       <div class="story-beat flip reveal" style="--accent: var(--teal)">
         <div class="beat-copy">
-          <span class="step-num">STEP 02</span>
-          <h3>They play — as hard as they possibly can.</h3>
-          <p>Ten fingers at once, mashing the glass. Each touch blooms a ripple, pops a shape, flings a comet or lights a sparkle. It never stutters and it never runs out. Tap the chips to switch worlds.</p>
-          <div class="aside">A fixed animated pool → bounded, lag-free throughput</div>
+          <span class="step-num">STEP 02 · PLAY</span>
+          <h3>Hand it over. Let them play.</h3>
+          <p>Every touch makes light, colour and sound — ripples, popping shapes, a sound pad, comets, sparkles. Ten fingers mashing at once only makes more. Nothing lags, nothing runs out, and there's nothing else on screen to wander into.</p>
         </div>
         <div class="beat-device">
           <div class="device sm">
             <div class="notch" aria-hidden="true"></div>
             <div class="screen">
-              <canvas data-demo data-cycle="1" data-autoplay="1" data-interactive="1" aria-label="Play canvas with multiple activities"></canvas>
-              <div class="screen-chips" data-chips role="group" aria-label="Choose an activity"></div>
+              <canvas data-demo data-cycle="1" data-autoplay="1" aria-label="Illustration: the play canvas cycling through activities"></canvas>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- beat 3 -->
+      <!-- beat 3: safe -->
       <div class="story-beat reveal" style="--accent: var(--amber)">
         <div class="beat-copy">
-          <span class="step-num">STEP 03</span>
+          <span class="step-num">STEP 03 · SAFE</span>
           <h3>Nothing they tap can go wrong.</h3>
           <p>No email gets sent. No app gets deleted. No call goes out. Every tap lands on the toy and nowhere else — the rest of your phone simply isn't reachable while they play.</p>
-          <div class="aside">no accidental emails, purchases, or deleted apps</div>
         </div>
         <div class="beat-device">
           <div class="device sm">
             <div class="notch" aria-hidden="true"></div>
             <div class="screen">
               <div class="status-pill warn"><span class="dot"></span>Nothing to break</div>
-              <canvas data-demo data-activity="pop" data-autoplay="1" data-interactive="1" aria-label="Play canvas — the rest of the phone stays out of reach"></canvas>
+              <canvas data-demo data-activity="pop" data-autoplay="1" aria-label="Illustration: play continues while the rest of the phone stays out of reach"></canvas>
               <div class="trap-overlay">
                 <div class="home-bar"><span class="no-symbol"></span></div>
                 <div class="trap-label">the toy is all there is</div>
@@ -445,24 +483,22 @@
         </div>
       </div>
 
-      <!-- beat 4 -->
+      <!-- beat 4: exit -->
       <div class="story-beat flip reveal" style="--accent: var(--rose)">
         <div class="beat-copy">
-          <span class="step-num">STEP 04</span>
-          <h3>You decide it's over — and only you can.</h3>
-          <p>Hold four fingers to wake the gate. Tap the corners clockwise. Then enter your PIN on a pad whose numbers are shuffled every time, so there's no muscle-memory to mimic. The device unlocks the instant you're done.</p>
-          <div class="aside"><code>corners → randomized PIN → unlock()</code></div>
+          <span class="step-num">STEP 04 · EXIT</span>
+          <h3>Done? Hold two fingers, tap your PIN.</h3>
+          <p>Press and hold two fingers anywhere for about a second — a little "keep holding" bar confirms it's working — then enter your PIN on a pad that reshuffles every time. It's quick even one-handed and distracted. Forgot the PIN? Press and hold the exit button instead. Either way, your phone comes right back.</p>
         </div>
         <div class="beat-device">
           <div class="device sm">
             <div class="notch" aria-hidden="true"></div>
             <div class="screen">
-              <div class="gate" id="gate">
-                <span class="corner c1">1</span><span class="corner c2">2</span>
-                <span class="corner c3">3</span><span class="corner c4">4</span>
-                <h4>Enter parent PIN</h4>
-                <div class="pin-dots" id="pin-dots"><i></i><i></i><i></i><i></i></div>
+              <div class="gate">
+                <div class="exit-hint">✌️ Hold two fingers</div>
+                <h4>Enter your PIN</h4>
                 <div class="pinpad" id="pinpad"></div>
+                <span class="forgot-link">Forgot PIN?</span>
               </div>
             </div>
           </div>
@@ -486,8 +522,45 @@
         <div class="act reveal"><div class="g">✨</div><h4>Sparkles</h4><p>Spinning four-point twinkles</p></div>
       </div>
       <div class="ext reveal">
-        <p><strong style="color:var(--ink)">Built to grow.</strong> Author a <code>forwardRef</code> component, add one line to <code>registry.ts</code>, and the switcher and canvas pick it up automatically — no other changes.</p>
+        <p><strong style="color:var(--ink)">Built to grow.</strong> Each play world is a small, self-contained module, so new ones can be added without touching the rest of the app.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- UNDER THE HOOD -->
+  <section class="tech" id="tech">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <span class="eyebrow">Under the hood</span>
+        <h2>For the curious: how it actually works.</h2>
+        <p>You don't need any of this to use Kid Mode — but if you build things, here's what's behind the four pillars.</p>
+      </div>
+      <div class="tech-grid">
+        <div class="tech-card reveal">
+          <h3>Real device lockdown</h3>
+          <p>On Android the app calls <code>startLockTask()</code>; provisioned as a Device Owner it becomes a true no-escape kiosk with notifications suppressed. On iOS it drives Guided Access / Autonomous Single App Mode on supervised devices.</p>
+          <p>As a second line of defence, JavaScript traps the hardware Back button and keeps the app in immersive, full-screen mode.</p>
+        </div>
+        <div class="tech-card reveal">
+          <h3>A canvas that can't be overwhelmed</h3>
+          <p>Every touch feeds a <em>fixed pool</em> of pre-allocated animated objects. A burst of taps becomes a burst of cheap shared-value writes on the UI thread (via Reanimated worklets) — never React re-renders or garbage-collection churn — so throughput stays bounded and lag-free.</p>
+        </div>
+        <div class="tech-card reveal">
+          <h3>The parental gate</h3>
+          <p>A two-finger press-and-hold opens the gate; a PIN pad whose digits reshuffle each time defeats positional memory. Each barrier targets something a 0–5-year-old can't yet do — sustained multi-touch, and reading digits.</p>
+          <p>The "Forgot PIN?" fallback is a timed press-and-hold that needs no stored secret, so it can't be forgotten. In production, the device's own screen-pin / Guided-Access exit (protected by the phone's passcode) is always the ultimate way out.</p>
+        </div>
+        <div class="tech-card reveal">
+          <h3>The stack</h3>
+          <p>React Native + TypeScript, with hand-written native modules in Kotlin and Swift for both platforms. Fully open source under the MIT license, with CI that builds an installable Android APK and iOS app on every change.</p>
+        </div>
+      </div>
+      <p class="tech-note reveal">
+        Go deeper:
+        <a href="https://github.com/CoderCoop/kidmode/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a> ·
+        <a href="https://github.com/CoderCoop/kidmode/blob/main/docs/NATIVE_SETUP.md" target="_blank" rel="noopener">Native setup</a> ·
+        <a href="https://github.com/CoderCoop/kidmode" target="_blank" rel="noopener">Source on GitHub</a>
+      </p>
     </div>
   </section>
 
@@ -742,28 +815,15 @@
     if (d) wireChips(host, d);
   });
 
-  // ---- parental gate mockup ----
+  // ---- parental gate mockup (static illustration) ----
   var pinpad = document.getElementById("pinpad");
   if (pinpad){
-    // A randomized 3x3 of digits 1–9 — reshuffled on every load, so there is no
-    // fixed key positions for a child to memorize by watching.
+    // A randomized 3x3 of digits 1–9, mirroring the app's reshuffled pad so no
+    // fixed key position can be memorised by watching.
     var digits = [1,2,3,4,5,6,7,8,9];
     for (var i = digits.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var tmp = digits[i]; digits[i] = digits[j]; digits[j] = tmp; }
     pinpad.innerHTML = "";
     digits.forEach(function(n){ var b = document.createElement("button"); b.type = "button"; b.textContent = n; b.tabIndex = -1; pinpad.appendChild(b); });
-
-    if (!reduce){
-      var corners = document.querySelectorAll("#gate .corner");
-      var dots = document.querySelectorAll("#pin-dots i");
-      var step = 0;
-      setInterval(function(){
-        corners.forEach(function(c){ c.classList.remove("lit"); });
-        dots.forEach(function(d){ d.classList.remove("on"); });
-        if (step < 4){ for (var s = 0; s <= step; s++) corners[s].classList.add("lit"); }
-        else { corners.forEach(function(c){ c.classList.add("lit"); }); var filled = step - 3; for (var d2 = 0; d2 < filled && d2 < 4; d2++) dots[d2].classList.add("on"); }
-        step = (step + 1) % 9;
-      }, 620);
-    }
   }
 
   // ---- scroll reveal ----

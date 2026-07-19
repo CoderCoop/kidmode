@@ -7,7 +7,7 @@ replaced without touching the others.
 ```
 src/
 ├─ kiosk/          device lockdown (native bridge + lifecycle)
-├─ parentalGate/   the exit challenge (corners + randomized PIN)
+├─ parentalGate/   the exit gate (two-finger hold + randomized PIN)
 ├─ canvas/         the resilient multi-touch surface + animated pool
 ├─ activities/     pluggable play modules + registry
 ├─ shell/          the app shell that composes everything
@@ -42,15 +42,22 @@ propagate back into JS.
 
 ## 2. Parental gate (`src/parentalGate`)
 
-Three escalating barriers, each keyed to a capability a 0–5 child lacks:
+Two barriers, each keyed to a capability a 0–5 child lacks, deliberately kept
+quick and forgiving for a distracted adult:
 
-1. **Open** — a **multi-finger long-press** (`useGateTrigger`, `minPointers`),
-   composed *simultaneously* with the canvas so it never steals play touches.
-2. **Corners** — tap the four corners **clockwise, in order, promptly**
-   (`useCornerSequence`). Wrong order or dawdling past the timeout resets. Random
-   mashing cannot satisfy an ordered, timed sequence.
-3. **PIN** — a **randomized** pad (`shuffledDigits`) reshuffled on open and after
+1. **Open** — a **two-finger press-and-hold** (`useGateTrigger`,
+   `numberOfPointers`), composed *simultaneously* with the canvas so it never
+   steals single-finger play touches. A `holdProgress` shared value drives a
+   live "keep holding to exit" indicator (`HoldToExit`) so the parent gets
+   immediate feedback that the hidden gesture is working.
+2. **PIN** — a **randomized** pad (`shuffledDigits`) reshuffled on open and after
    every failure, defeating positional memory and requiring literacy.
+
+**Recovery** — a "Forgot PIN?" affordance reveals a timed press-and-hold that
+exits without the PIN (`recoveryHoldMs`). It stores no second secret, so it can
+never be forgotten, yet is far too sustained for a toddler to stumble into. (In
+production the device's own screen-pin / Guided-Access exit, gated by the phone
+passcode, is the ultimate fallback.)
 
 The gate renders in a top-level `Modal` and auto-dismisses on idle, returning a
 child who somehow reaches it back to play.
@@ -107,7 +114,9 @@ finger down
 
 ## Testing
 
-Pure logic is covered by Jest (`__tests__/`): the PIN shuffle/compare, the corner
-sequence state machine (order, reset, timeout, repeat-forgiveness), and the
-kiosk lifecycle against a mocked native module. UI-thread animation code is
-intentionally thin and declarative so it needs no device to reason about.
+Logic and interaction are covered by Jest (`__tests__/`): the PIN shuffle/compare,
+the gate flow (opens straight to the PIN pad, unlocks on the correct PIN, rejects
+a wrong one, and the "Forgot PIN?" hold-to-exit fallback fires only after a full
+hold), the activity registry, and the kiosk lifecycle against a mocked native
+module. UI-thread animation code is intentionally thin and declarative so it
+needs no device to reason about.

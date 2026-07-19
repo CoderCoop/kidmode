@@ -3,7 +3,12 @@ import {StatusBar, StyleSheet, Text, View, useWindowDimensions} from 'react-nati
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {InteractiveCanvas} from '../canvas';
 import {ACTIVITIES, getActivity} from '../activities';
-import {DEFAULT_GATE_CONFIG, ParentalGate, useGateTrigger} from '../parentalGate';
+import {
+  DEFAULT_GATE_CONFIG,
+  HoldToExit,
+  ParentalGate,
+  useGateTrigger,
+} from '../parentalGate';
 import {useKiosk} from '../kiosk';
 import {ActivitySwitcher} from './ActivitySwitcher';
 import {ReleasedScreen} from './ReleasedScreen';
@@ -29,9 +34,10 @@ export function Sandbox(): React.JSX.Element {
 
   const openGate = useCallback(() => setGateOpen(true), []);
 
-  // The multi-finger long-press that reveals the gate. Composed simultaneously
-  // with the canvas so it never steals single-finger play touches.
-  const triggerGesture = useGateTrigger({
+  // The two-finger press-and-hold that reveals the gate. Composed simultaneously
+  // with the canvas so it never steals single-finger play touches. `holdProgress`
+  // drives the "keep holding to exit" indicator so a parent gets live feedback.
+  const {gesture: triggerGesture, holdProgress} = useGateTrigger({
     fingers: DEFAULT_GATE_CONFIG.triggerFingers,
     holdMs: DEFAULT_GATE_CONFIG.triggerHoldMs,
     onTrigger: openGate,
@@ -84,10 +90,13 @@ export function Sandbox(): React.JSX.Element {
           </Text>
         </View>
         <Text style={styles.hint}>
-          Grown-ups: hold {DEFAULT_GATE_CONFIG.triggerFingers} fingers to exit
-          {capabilities && !capabilities.canPinScreen ? '  •  soft-lock' : ''}
+          Grown-up? Hold {DEFAULT_GATE_CONFIG.triggerFingers} fingers anywhere to
+          exit{capabilities && !capabilities.canPinScreen ? '  •  soft-lock' : ''}
         </Text>
       </View>
+
+      {/* Live "keep holding to exit" feedback for the two-finger gesture. */}
+      <HoldToExit progress={holdProgress} />
 
       <ParentalGate
         open={gateOpen}
