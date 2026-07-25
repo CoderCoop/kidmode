@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Kid Mode — let them play with your phone, safely</title>
 <meta name="description" content="Kid Mode turns your phone into a safe, full-screen play space for children 0–5. Hand it over without worrying they'll send an email, delete an app, or buy something — just light, colour and sound, with a parent-only way back to the real phone." />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF5DA2'/%3E%3Cstop offset='1' stop-color='%238338EC'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='26' fill='url(%23g)'/%3E%3Crect x='44' y='46' width='12' height='35' rx='6' fill='%23FFF6E9'/%3E%3Ccircle cx='50' cy='84' r='9' fill='%23FFF6E9'/%3E%3Ccircle cx='31' cy='52' r='6.5' fill='%23FFF6E9'/%3E%3Ccircle cx='69' cy='52' r='6.5' fill='%23FFF6E9'/%3E%3Ccircle cx='50' cy='31' r='21' fill='%23FFF6E9'/%3E%3Cpath d='M50 21 L52.6 28.4 L60 31 L52.6 33.6 L50 41 L47.4 33.6 L40 31 L47.4 28.4 Z' fill='%238338EC'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF5DA2'/%3E%3Cstop offset='1' stop-color='%238338EC'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='26' fill='url(%23g)'/%3E%3Cg stroke='%233A1C5A' stroke-width='4.5' stroke-linejoin='round'%3E%3Crect x='44' y='44' width='12' height='35' rx='6' fill='%23FFF6E9'/%3E%3Ccircle cx='50' cy='82' r='9' fill='%23FFF6E9'/%3E%3Ccircle cx='50' cy='31' r='20' fill='%23FFF6E9'/%3E%3C/g%3E%3Cpath d='M50 22 L52.1 27.9 L58 30 L52.1 32.1 L50 38 L47.9 32.1 L42 30 L47.9 27.9 Z' fill='%23FF9F1C'/%3E%3Cg stroke='%233A1C5A' stroke-width='3.2' stroke-linejoin='round'%3E%3Cpath d='M50 52 L36 45 L36 59 Z' fill='%23FF3B6B'/%3E%3Cpath d='M50 52 L64 45 L64 59 Z' fill='%23FF3B6B'/%3E%3Ccircle cx='50' cy='52' r='4' fill='%23FF3B6B'/%3E%3C/g%3E%3C/svg%3E" />
 <style>
   :root {
     --canvas: #0B0B10;
@@ -388,16 +388,21 @@
       </linearGradient>
     </defs>
     <rect x="2" y="2" width="96" height="96" rx="27" fill="url(#km-tile)" />
-    <!-- handle + grip ball -->
-    <rect x="44" y="46" width="12" height="35" rx="6" fill="#FFF6E9" />
-    <circle cx="50" cy="84" r="9" fill="#FFF6E9" />
-    <!-- side beads at the neck (the classic rattle cue) -->
-    <circle cx="31" cy="52" r="6.5" fill="#FFF6E9" />
-    <circle cx="69" cy="52" r="6.5" fill="#FFF6E9" />
-    <!-- shaker head -->
-    <circle cx="50" cy="31" r="21" fill="#FFF6E9" />
-    <!-- little toy star -->
-    <path d="M50 21 L52.6 28.4 L60 31 L52.6 33.6 L50 41 L47.4 33.6 L40 31 L47.4 28.4 Z" fill="#8338EC" />
+    <!-- cartoon rattle silhouette with a bold outline -->
+    <g stroke="#3A1C5A" stroke-width="4.5" stroke-linejoin="round">
+      <rect x="44" y="44" width="12" height="35" rx="6" fill="#FFF6E9" />
+      <circle cx="50" cy="82" r="9" fill="#FFF6E9" />
+      <circle cx="50" cy="31" r="20" fill="#FFF6E9" />
+    </g>
+    <!-- shine + toy star on the shaker head -->
+    <ellipse cx="43" cy="24" rx="5.5" ry="3.6" fill="#FFFFFF" opacity="0.7" transform="rotate(-35 43 24)" />
+    <path d="M50 22 L52.1 27.9 L58 30 L52.1 32.1 L50 38 L47.9 32.1 L42 30 L47.9 27.9 Z" fill="#FF9F1C" />
+    <!-- bow at the neck -->
+    <g stroke="#3A1C5A" stroke-width="3.2" stroke-linejoin="round">
+      <path d="M50 52 L36 45 L36 59 Z" fill="#FF3B6B" />
+      <path d="M50 52 L64 45 L64 59 Z" fill="#FF3B6B" />
+      <circle cx="50" cy="52" r="4" fill="#FF3B6B" />
+    </g>
   </symbol>
 </svg>
 
