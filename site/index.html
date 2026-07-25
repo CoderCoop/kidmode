@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Kid Mode — let them play with your phone, safely</title>
 <meta name="description" content="Kid Mode turns your phone into a safe, full-screen play space for children 0–5. Hand it over without worrying they'll send an email, delete an app, or buy something — just light, colour and sound, with a parent-only way back to the real phone." />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230B0B10'/%3E%3Ccircle cx='50' cy='50' r='26' fill='none' stroke='%23FF3B6B' stroke-width='7'/%3E%3Ccircle cx='50' cy='50' r='11' fill='%232EC4B6'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF5DA2'/%3E%3Cstop offset='1' stop-color='%238338EC'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='26' fill='url(%23g)'/%3E%3Crect x='43' y='50' width='14' height='37' rx='7' fill='%23FFF6E9'/%3E%3Ccircle cx='50' cy='84' r='9.5' fill='%23FFF6E9'/%3E%3Ccircle cx='50' cy='38' r='23' fill='%23FFF6E9'/%3E%3Ccircle cx='41.5' cy='37' r='3.3' fill='%235B2A86'/%3E%3Ccircle cx='58.5' cy='37' r='3.3' fill='%235B2A86'/%3E%3C/svg%3E" />
 <style>
   :root {
     --canvas: #0B0B10;
@@ -85,10 +85,8 @@
   .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
   .wordmark { display: flex; align-items: center; gap: 11px; font-weight: 800; font-size: 19px; letter-spacing: -0.01em; text-decoration: none; flex: none; }
   .logo-mark {
-    width: 30px; height: 30px; border-radius: 9px; flex: none;
-    background: radial-gradient(circle at 50% 50%, var(--teal) 0 22%, transparent 24%),
-                conic-gradient(from 0deg, var(--rose), var(--amber), var(--yellow), var(--teal), var(--blue), var(--violet), var(--rose));
-    box-shadow: 0 0 22px rgba(131,56,236,0.5);
+    width: 30px; height: 30px; flex: none; display: block;
+    filter: drop-shadow(0 3px 10px rgba(131,56,236,0.45));
   }
   /* Section nav: stays reachable at every width — scrolls horizontally when it
      can't all fit (e.g. on phones) instead of hiding. */
@@ -380,9 +378,28 @@
 </head>
 <body>
 
+<!-- Kid Mode logo: a friendly baby rattle (reused in the header + footer) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="kid-rattle" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="km-tile" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#FF5DA2" />
+        <stop offset="1" stop-color="#8338EC" />
+      </linearGradient>
+    </defs>
+    <rect x="2" y="2" width="96" height="96" rx="27" fill="url(#km-tile)" />
+    <rect x="43" y="50" width="14" height="37" rx="7" fill="#FFF6E9" />
+    <circle cx="50" cy="84" r="9.5" fill="#FFF6E9" />
+    <circle cx="50" cy="38" r="23" fill="#FFF6E9" />
+    <circle cx="41.5" cy="37" r="3.3" fill="#5B2A86" />
+    <circle cx="58.5" cy="37" r="3.3" fill="#5B2A86" />
+    <path d="M44 45.5 q6 5 12 0" fill="none" stroke="#5B2A86" stroke-width="3" stroke-linecap="round" />
+  </symbol>
+</svg>
+
 <header>
   <div class="wrap nav">
-    <a class="wordmark" href="#top"><span class="logo-mark" aria-hidden="true"></span>Kid&nbsp;Mode</a>
+    <a class="wordmark" href="#top"><svg class="logo-mark" aria-hidden="true"><use href="#kid-rattle" /></svg>Kid&nbsp;Mode</a>
     <nav class="nav-links" aria-label="Sections">
       <a href="#demo">Demo</a>
       <a href="#why">Why</a>
@@ -644,7 +661,7 @@
 
 <footer>
   <div class="wrap foot">
-    <div class="wordmark" style="font-size:16px"><span class="logo-mark" aria-hidden="true" style="width:22px;height:22px"></span>Kid&nbsp;Mode</div>
+    <div class="wordmark" style="font-size:16px"><svg class="logo-mark" aria-hidden="true" style="width:22px;height:22px"><use href="#kid-rattle" /></svg>Kid&nbsp;Mode</div>
     <div class="foot-links">
       <a href="https://github.com/CoderCoop/kidmode" target="_blank" rel="noopener">GitHub</a>
       <a href="https://github.com/CoderCoop/kidmode/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a>
