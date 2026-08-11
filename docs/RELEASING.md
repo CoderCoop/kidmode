@@ -55,3 +55,11 @@ picks them up automatically.
 Gradle properties when present and otherwise falls back to a `0.0.0`
 placeholder, so local and untagged CI builds never need a real version while
 tagged releases always carry the tag's version.
+
+Two other places declare a version and should be bumped to match the tag when
+you cut a release (they are not auto-stamped, since the release workflow builds
+only the Android APK):
+
+- `package.json` → `"version"` (must stay valid semver `MAJOR.MINOR.PATCH`).
+- iOS `MARKETING_VERSION` in `ios/KidMode.xcodeproj/project.pbxproj` (semver);
+  bump `CURRENT_PROJECT_VERSION` (the build number) alongside it.
