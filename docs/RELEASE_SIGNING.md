@@ -1,10 +1,13 @@
 # Release signing
 
-The CI pipeline (`ci/build.yml` → move to `.github/workflows/build.yml` to
-activate) builds **unsigned/debug-signed** packages out of the box. Add the
-repository secrets below (Settings ▸ Secrets and variables ▸ Actions) to have it
-emit **properly signed** builds instead. Each platform's signing is independent;
-configure one, both, or neither.
+The CI pipeline (`.github/workflows/build.yml`) builds **unsigned/debug-signed**
+packages out of the box. Add the repository secrets below (Settings ▸ Secrets and
+variables ▸ Actions) to have it emit **properly signed** builds instead. Each
+platform's signing is independent; configure one, both, or neither.
+
+> Cutting a versioned release (a GitHub Release with the APK attached) is
+> covered in [RELEASING.md](RELEASING.md). The signing secrets here apply to
+> both CI builds and tagged releases.
 
 ## Android — a release-signed APK
 
@@ -25,7 +28,7 @@ Then set these secrets:
 | `ANDROID_KEY_PASSWORD` | the key password you chose |
 
 When `ANDROID_KEYSTORE_BASE64` is present, CI decodes the keystore, appends the
-`BABYMODE_UPLOAD_*` Gradle properties, and `assembleRelease` signs with it (see
+`KIDMODE_UPLOAD_*` Gradle properties, and `assembleRelease` signs with it (see
 the `signingConfigs.release` block in `android/app/build.gradle`). When absent,
 the release APK falls back to debug signing so the build never breaks.
 

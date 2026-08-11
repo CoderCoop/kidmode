@@ -82,8 +82,16 @@ android {
         applicationId "com.kidmode"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // Version is driven by the release tag (semver). CI passes
+        // -PKIDMODE_VERSION_NAME=X.Y.Z and a derived integer
+        // -PKIDMODE_VERSION_CODE on tagged release builds; local/dev builds
+        // fall back to the placeholder below. See docs/RELEASING.md.
+        versionCode(project.hasProperty('KIDMODE_VERSION_CODE')
+            ? project.property('KIDMODE_VERSION_CODE').toInteger()
+            : 1)
+        versionName(project.hasProperty('KIDMODE_VERSION_NAME')
+            ? project.property('KIDMODE_VERSION_NAME')
+            : "0.0.0")
     }
     signingConfigs {
         debug {

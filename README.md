@@ -88,6 +88,11 @@ Add signing secrets to emit fully signed builds — see
 [`.github/workflows/build.yml`](.github/workflows/build.yml) and runs
 automatically on every push and pull request.
 
+**Cutting a release.** Push a semver tag (`git tag v1.2.3 && git push origin
+v1.2.3`) to build a version-stamped APK and publish it as a
+[GitHub Release](https://github.com/CoderCoop/kidmode/releases) — a direct,
+login-free `.apk` download. See [`docs/RELEASING.md`](docs/RELEASING.md).
+
 Build locally: `cd android && ./gradlew assembleRelease`. See
 [`docs/NATIVE_SETUP.md`](docs/NATIVE_SETUP.md) for tooling, the module layout,
 and the strongest-lockdown provisioning steps (Android Device Owner / iOS
